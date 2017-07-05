@@ -110,7 +110,7 @@ void    ssd1306::fill_rect_to_buffer ( uint8_t x1, uint8_t y1, uint8_t x2, uint8
     }
 
     if (color != 0) {		// Закрашиваем экран или чистим.
-        for (uint8_t x_point = x1; x_point<=x2; x_point++){
+        for (uint8_t x_point = x1; x_point<=x2; x_point++) {
             for (uint8_t y_point = y1; y_point<=y2; y_point++) {
                 this->point_set_buffer( x_point, y_point );
             }
@@ -125,7 +125,7 @@ void    ssd1306::fill_rect_to_buffer ( uint8_t x1, uint8_t y1, uint8_t x2, uint8
 }
 
 
-void    ssd1306::draw_line_to_buffer ( uint8_t x1, uint8_t y1,const  uint8_t& x2, const uint8_t& y2, const uint8_t& color ) const {
+void ssd1306::draw_line_to_buffer ( uint8_t x1, uint8_t y1,const  uint8_t& x2, const uint8_t& y2, const uint8_t& color ) const {
     int deltaX, deltaY, signX, signY, error, error2;
     int dX, dY;
     uint16_t x, y;
@@ -174,16 +174,14 @@ void    ssd1306::draw_line_to_buffer ( uint8_t x1, uint8_t y1,const  uint8_t& x2
     };
 }
 
-
-/*
-
 // Рисуем символ на экране выбранным шрифтом.
 // font - указатель на структуру типа tFont, описанную в файле font_struct.h.
 // x, y - положения левого верхнего угла.
 // ch - символ на вывод UTF-8.
 // color цвет.
 // or - ореинтация экрана: 0 - портретная, 1 - горизонтальная.
-void ssd1306_printChar_to_buffer (int ssd1306_fd, tFont *font, uint8_t x, uint8_t y, uint8_t ch, uint8_t color, uint8_t rle ){
+/*
+void ssd1306::print_char_to_buffer ( const font_t& const font, const uint8_t& x, const uint8_t& y, const uint8_t& ch, const uint8_t& color, const uint8_t& rle ){
     (void)rle;
     ssd1306_t *d = eflib_getInstanceByFd (ssd1306_fd);
     if (ch<0x20) return;			// Защита от пустых пикселей.
@@ -230,8 +228,8 @@ void ssd1306_printChar_to_buffer (int ssd1306_fd, tFont *font, uint8_t x, uint8_
             };
         };
     };
-};*/
-
+};
+*/
 /*
 // rle = 1 - расшифровываем с помощью RLE.
 // rle = 0 - фигачим напрямую.
@@ -246,16 +244,12 @@ void ssd1306_printString_to_buffer (int ssd1306_fd, tFont *font, uint8_t x, uint
 }
 */
 
-
-
-
-
 /*
 
 // Печатаем первые number_char символов строки.
 // rle = 1 - расшифровываем с помощью RLE.
 // rle = 0 - фигачим напрямую.
-void ssd1306_printString_number_to_buffer (int ssd1306_fd, tFont *font, uint8_t x, uint8_t y, char *string, uint8_t number_char, uint8_t color, uint8_t rle ){
+void ssd1306::print_string_number_to_buffer ( font_t *font, uint8_t x, uint8_t y, char *string, uint8_t number_char, uint8_t color, uint8_t rle ) {
     uint16_t x_point = x, y_point = y;			// Чтобы следить за расположением пикселей.
     for (uint8_t loop_char = 0; loop_char<number_char; loop_char++){
         ssd1306_printChar_to_buffer (ssd1306_fd, font, x_point, y_point, string[loop_char], color, rle );
@@ -265,7 +259,6 @@ void ssd1306_printString_number_to_buffer (int ssd1306_fd, tFont *font, uint8_t 
     };
 }
 */
-
 
 // Рисуем рамку заданной толщины.
 // Толщина от 0.
