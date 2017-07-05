@@ -1,6 +1,8 @@
 #pragma once
 
 #include "mono_lcd_lib_cfg.h"
+#include "mono_lcd_lib_font_struct.h"
+#include "mono_lcd_lib_rle.h"
 
 // Структура конфигурации ssd1306 в 8-ми битнос SPI режиме.
 struct ssd1306_cfg_t {
@@ -24,7 +26,7 @@ public:
 
     void    fill_rect_to_buffer (uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, const uint8_t& color ) const;	// Рисуем закрашенный прямоугольник.
     void    draw_line_to_buffer (  uint8_t x1, uint8_t y1 ,const  uint8_t& x2, const uint8_t& y2, const uint8_t& color ) const;	// Рисуем линию (или затеряем линией).
-   // void    printChar_to_buffer (tFont *font, uint8_t x, uint8_t y, uint8_t ch, uint8_t color, uint8_t rle );	// Рисуем символ.
+    void    print_char_to_buffer ( const font_t& font, const uint8_t& x, const uint8_t& y, uint8_t ch, const uint8_t& color, const uint8_t& rle );
     //void    printString_to_buffer (tFont *font, uint8_t x, uint8_t y, char *string, uint8_t color, uint8_t rle);	// Целую строку.
     //void    print_string_number_to_buffer (tFont *font, uint8_t x, uint8_t y, char *string, uint8_t number_char, uint8_t color, uint8_t rle);	// Рисуем заданное колличество символов на экране.
     void    draw_frame_to_buffer ( const uint8_t& x, uint8_t& y, const uint8_t& width, const uint8_t& height, const uint8_t& thickness, const uint8_t& color) const ;	// Рисуем рамку (или стираем рамкой).

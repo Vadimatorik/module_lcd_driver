@@ -1,4 +1,4 @@
-#include "font_struct.h"
+#include "mono_lcd_lib_font_struct.h"
 
 #if (0x0 == 0x0)
 static const uint8_t image_data_font_gost_type_b_12_rle_0x20[2] = {

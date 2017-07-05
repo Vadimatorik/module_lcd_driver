@@ -180,45 +180,42 @@ void ssd1306::draw_line_to_buffer ( uint8_t x1, uint8_t y1,const  uint8_t& x2, c
 // ch - символ на вывод UTF-8.
 // color цвет.
 // or - ореинтация экрана: 0 - портретная, 1 - горизонтальная.
-/*
-void ssd1306::print_char_to_buffer ( const font_t& const font, const uint8_t& x, const uint8_t& y, const uint8_t& ch, const uint8_t& color, const uint8_t& rle ){
-    (void)rle;
-    ssd1306_t *d = eflib_getInstanceByFd (ssd1306_fd);
+void ssd1306::print_char_to_buffer ( const font_t& font, const uint8_t& x, const uint8_t& y, uint8_t ch, const uint8_t& color, const uint8_t& rle ) {
     if (ch<0x20) return;			// Защита от пустых пикселей.
     ch -= 0x20;						// Первые 0x20 элементов отсутствуют.
     uint8_t byte_w = 0;				// Нужно узнать, сколько uint8_t приходится на одну строку.
-    int buffer_w = font->chars[(uint8_t)ch].image->x; // Смотрим, сколько пикселей приходится на ширину.
+    int buffer_w = font.chars[ch].image->x; // Смотрим, сколько пикселей приходится на ширину.
     while(buffer_w>0){
         byte_w++;			// Минимум 1.
         buffer_w-=8;		// Шаг - 8 бит.
     };
-    uint8_t *buf = (uint8_t*)(font->chars[(uint8_t)ch].image->point_array);	// Получаем указатель на 0-й байт 0-й строки.
+    const uint8_t* buf = font.chars[ch].image->p_array;	// Получаем указатель на 0-й байт 0-й строки.
     if (rle == 1){			// Если используем rle, то указываем начало символа там.
-        rle_pos_set(buf);
+        mono_lcd_lib_rle rle(buf);
         volatile uint8_t buffer;
-        for (int y_loop = 0; y_loop<font->chars[(uint8_t)ch].image->size; y_loop++){
+        for (int y_loop = 0; y_loop<font.chars[ch].image->size; y_loop++){
             volatile int bit_loop = 7;
-            buffer = rle_get_byte();
-            for (volatile int x_loop = 0; x_loop<font->chars[(uint8_t)ch].image->x; x_loop++){
+            buffer = rle.get_byte();
+            for (volatile int x_loop = 0; x_loop<font.chars[ch].image->x; x_loop++){
                 if ((buffer & (1<<bit_loop)) != 0){
-                    _ssd1306_setPixel_buffer (d, x_loop+x, y_loop+y, color);
+                    this->set_pixel_buffer( x_loop+x, y_loop+y, color );
                 };
                 bit_loop--;
                 if (bit_loop<0) {
-                    if ((x_loop+1) != font->chars[(uint8_t)ch].image->x){	// Это защита от крисвого отображения. На случай, если шрифт имеет кратную 8 битам ширину. 8, 16, 24...
+                    if ((x_loop+1) != font.chars[ch].image->x){	// Это защита от крисвого отображения. На случай, если шрифт имеет кратную 8 битам ширину. 8, 16, 24...
                         bit_loop = 7;
-                        buffer = rle_get_byte();
+                        buffer = rle.get_byte();
                     };
                 };
             };
         };
     } else {
-        for (int y_loop = 0; y_loop<font->chars[(uint8_t)ch].image->size; y_loop++){	// Идем по строкам. Но каждая строка = byte_w байт. Это учитываем ниже.
+        for (int y_loop = 0; y_loop < font.chars[ch].image->size; y_loop++){	// Идем по строкам. Но каждая строка = byte_w байт. Это учитываем ниже.
             uint16_t loop_byte = 0;	// Перемещаемся по массиву строки.
             uint8_t bit_string = 8;	// Для отслеживания положения в uint8_t.
-            for (int x_loop = 0; x_loop<font->chars[(uint8_t)ch].image->x; x_loop++){	// Только считаем колличество байт в строке. Обращаемся к пикселю через переменные выше.
+            for (int x_loop = 0; x_loop<font.chars[ch].image->x; x_loop++){	// Только считаем колличество байт в строке. Обращаемся к пикселю через переменные выше.
                 if ((buf[y_loop*byte_w+loop_byte] & (1<<(bit_string-1))) != 0){
-                    _ssd1306_setPixel_buffer (d, x_loop+x, y_loop+y, color);
+                    this->set_pixel_buffer( x_loop+x, y_loop+y, color);
                 };
                 bit_string--;				// Перемещаемся по элементам массива строки. Слева направо. От младшего к старшему.
                 if (bit_string == 0){
@@ -228,8 +225,8 @@ void ssd1306::print_char_to_buffer ( const font_t& const font, const uint8_t& x,
             };
         };
     };
-};
-*/
+}
+
 /*
 // rle = 1 - расшифровываем с помощью RLE.
 // rle = 0 - фигачим напрямую.
