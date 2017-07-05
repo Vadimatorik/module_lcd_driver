@@ -79,7 +79,7 @@ void mono_lcd_lib_st7565::reset ( void ) const {
          // LCD bias select
         this->com_out(CMD_SET_BIAS_9);
           // ADC select
-        this->com_out(CMD_SET_ADC_NORMAL);
+        this->com_out(CMD_SET_ADC_REVERSE);
           // SHL select
         this->com_out(CMD_SET_COM_NORMAL);
         // Initial display line
@@ -119,11 +119,8 @@ void mono_lcd_lib_st7565::update ( void ) const {
         this->com_out( CMD_SET_PAGE | p);
         uint8_t col = 0;
 
-        /*
-         * 4, т.к. дисплей рассчитан на 132 пикселя, а в LCD их всего 128 (в ширину).
-         */
-        this->com_out( CMD_SET_COLUMN_LOWER | ((col + 4) & 0x0F));
-        this->com_out( CMD_SET_COLUMN_UPPER | (((col + 4) >> 4) & 0x0F));
+        this->com_out( CMD_SET_COLUMN_LOWER | (col & 0x0F));
+        this->com_out( CMD_SET_COLUMN_UPPER | ((col >> 4) & 0x0F));
         this->com_out( CMD_RMW);
 
         for( ; col < 128; col++) {
@@ -137,9 +134,6 @@ void mono_lcd_lib_st7565::clear ( void ) const {
         this->com_out( CMD_SET_PAGE | p);
         uint8_t col = 0;
 
-        /*
-         * 4, т.к. дисплей рассчитан на 132 пикселя, а в LCD их всего 128 (в ширину).
-         */
         this->com_out( CMD_SET_COLUMN_LOWER | ((col + 4) & 0x0F));
         this->com_out( CMD_SET_COLUMN_UPPER | (((col + 4) >> 4) & 0x0F));
         this->com_out( CMD_RMW);
