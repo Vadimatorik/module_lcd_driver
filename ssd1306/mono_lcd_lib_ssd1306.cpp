@@ -227,35 +227,31 @@ void ssd1306::print_char_to_buffer ( const font_t& font, const uint8_t& x, const
     };
 }
 
-/*
+
 // rle = 1 - расшифровываем с помощью RLE.
 // rle = 0 - фигачим напрямую.
-void ssd1306_printString_to_buffer (int ssd1306_fd, tFont *font, uint8_t x, uint8_t y, char *string, uint8_t color, uint8_t rle){
+void ssd1306::print_string_to_buffer (const font_t& font, uint8_t x, uint8_t y, char *string, uint8_t color, uint8_t rle){
     uint16_t x_point = x, y_point = y;			// Чтобы следить за расположением пикселей.
     uint16_t loop_char = 0;
     while((string[loop_char] != 0)&&(string[loop_char] != '\n')){
-        ssd1306_printChar_to_buffer (ssd1306_fd, font, x_point, y_point, string[loop_char], color, rle);
-        x_point += font->chars[(uint8_t)string[loop_char]-0x20].image->x; // Смещаемся по x.
+        this->print_char_to_buffer (font, x_point, y_point, string[loop_char], color, rle);
+        x_point += font.chars[(uint8_t)string[loop_char]-0x20].image->x; // Смещаемся по x.
         loop_char++;
     };
 }
-*/
-
-/*
 
 // Печатаем первые number_char символов строки.
 // rle = 1 - расшифровываем с помощью RLE.
 // rle = 0 - фигачим напрямую.
-void ssd1306::print_string_number_to_buffer ( font_t *font, uint8_t x, uint8_t y, char *string, uint8_t number_char, uint8_t color, uint8_t rle ) {
+void ssd1306::print_string_number_to_buffer ( const font_t& font, uint8_t x, uint8_t y, char *string, uint8_t number_char, uint8_t color, uint8_t rle ) {
     uint16_t x_point = x, y_point = y;			// Чтобы следить за расположением пикселей.
     for (uint8_t loop_char = 0; loop_char<number_char; loop_char++){
-        ssd1306_printChar_to_buffer (ssd1306_fd, font, x_point, y_point, string[loop_char], color, rle );
+        this->print_char_to_buffer  ( font, x_point, y_point, string[loop_char], color, rle );
         if (string[loop_char] >= 0x20){	// Защита от пустой строки.
-            x_point += font->chars[(uint8_t)string[loop_char]-0x20].image->x; // Смещаемся по x.
+            x_point += font.chars[(uint8_t)string[loop_char]-0x20].image->x; // Смещаемся по x.
         };
     };
 }
-*/
 
 // Рисуем рамку заданной толщины.
 // Толщина от 0.
