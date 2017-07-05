@@ -1,5 +1,10 @@
 #include "mono_lcd_lib_st7565.h"
 
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
+
 void mono_lcd_lib_st7565::reinit (  const spi_base* spi_obj  ) const {
     this->mutex     = USER_OS_STATIC_MUTEX_CREATE( &this->mutex_buf );
     this->spi       = spi_obj;
@@ -77,7 +82,29 @@ void mono_lcd_lib_st7565::update ( void ) const {
         this->com_out( CMD_RMW);
 
         for( ; col < 128; col++) {
-            this->data_out( this->buf[(128*p)+col]);
+            this->data_out( this->buf[(128*p)+col] );
         }
     }
+}
+
+void mono_lcd_lib_st7565::clear ( void ) const {
+    for(int p = 0; p < 8; p++) {
+        this->com_out( CMD_SET_PAGE | p);
+        uint8_t col = 0;
+
+        /*
+         * 4, т.к. дисплей рассчитан на 132 пикселя, а в LCD их всего 128 (в ширину).
+         */
+        this->com_out( CMD_SET_COLUMN_LOWER | ((col + 4) & 0x0F));
+        this->com_out( CMD_SET_COLUMN_UPPER | (((col + 4) >> 4) & 0x0F));
+        this->com_out( CMD_RMW);
+
+        for( ; col < 128; col++) {
+            this->data_out( 0 );
+        }
+    }
+}
+
+void mono_lcd_lib_st7565::buf_clear ( void ) const {
+    memset(this->buf, 0, 1024);
 }

@@ -64,7 +64,10 @@ public:
     void  reset ( uint8_t contrast ) const;
     void set_brightness ( uint8_t val) const;
     void update ( void ) const;
+    void clear ( void ) const;
 
+
+    void buf_clear ( void ) const;
 private:
 
     void com_out ( uint8_t command ) const;
