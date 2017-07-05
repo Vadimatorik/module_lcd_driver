@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 // Массив значений-инициализаторов. Чтобы не засерать ОЗУ, сразу шлем из flash.
 static const uint8_t ssd1306_init_command[] = {
     0xAE, 0x20, 0x10, 0xb0, 0xc8, 0x00, 0x10, 0x40,
@@ -38,6 +39,17 @@ void mono_lcd_lib_ssd1306::reset ( void ) const {
     this->update();					// Обновляем буффер.
 }
 
+/*
+ * Включать/выключать LCD.
+ */
+void mono_lcd_lib_ssd1306::on ( void ) const {
+    while( true ) {}; // Поднять потом.
+}
+
+void mono_lcd_lib_ssd1306::off ( void ) const {
+     while( true ) {}; // Поднять потом.
+}
+
 // Выбираем позицию на экране. Функция не следит за флагом SPI. CS так же не дергает.
 void mono_lcd_lib_ssd1306::set_pos_to_lcd ( const uint8_t& x, const uint8_t& y ) const {
     cfg->dc->reset(); // Далее идет комманда.
@@ -66,7 +78,7 @@ void mono_lcd_lib_ssd1306::update ( void ) const {
 }
 
 // Инициализируем LCD.
-void mono_lcd_lib_ssd1306::buf_reset ( void ) const {
+void mono_lcd_lib_ssd1306::buf_clear ( void ) const {
     memset( this->buf, 0, 1024 );
 }
 

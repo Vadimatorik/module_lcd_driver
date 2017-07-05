@@ -3,6 +3,7 @@
 #include "mono_lcd_lib_cfg.h"
 #include "mono_lcd_lib_font_struct.h"
 #include "mono_lcd_lib_rle.h"
+#include "lcd_interface.h"
 
 /*
  * Парметры SPI MOTOROLA, CPHA = 1, CPOL = 1.
@@ -18,14 +19,16 @@ struct mono_lcd_lib_ssd1306_cfg_t {
  * Любой из методов класса долен быть вызван только
  * внутри потока пользовательской операционной системы.
  */
-class mono_lcd_lib_ssd1306 {
+class mono_lcd_lib_ssd1306 : public mono_lcd_128x64_base {
 public:
     constexpr mono_lcd_lib_ssd1306 ( const mono_lcd_lib_ssd1306_cfg_t* const cfg, uint8_t* const buf ): cfg(cfg), buf(buf) {}
 
     void    reinit          ( const spi_base* spi_obj ) const;
     void    reset           ( void ) const;
     void    update          ( void ) const; 				// Обновляем LCD из буффера, в котором рисовали.
-    void    buf_reset       ( void ) const;                 // Очищаем буффер.
+    void    buf_clear       ( void ) const;                 // Очищаем буффер.
+    void    on ( void ) const;
+    void    off ( void ) const;
 
     void    fill_rect_to_buffer (uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, const uint8_t& color ) const;	// Рисуем закрашенный прямоугольник.
     void    draw_line_to_buffer (  uint8_t x1, uint8_t y1 ,const  uint8_t& x2, const uint8_t& y2, const uint8_t& color ) const;	// Рисуем линию (или затеряем линией).
