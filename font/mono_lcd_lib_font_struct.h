@@ -18,3 +18,9 @@ struct font_t {
     int               length;
     const char_t*     const chars;
 };
+
+/*
+ * Список имеющихся шрифтов.
+ */
+extern const font_t font_gost_type_b_12_rle;
+extern const font_t font_gost_type_b_buld_rle_26;

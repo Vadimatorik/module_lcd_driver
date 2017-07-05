@@ -180,7 +180,7 @@ void ssd1306::draw_line_to_buffer ( uint8_t x1, uint8_t y1,const  uint8_t& x2, c
 // ch - символ на вывод UTF-8.
 // color цвет.
 // or - ореинтация экрана: 0 - портретная, 1 - горизонтальная.
-void ssd1306::print_char_to_buffer ( const font_t& font, const uint8_t& x, const uint8_t& y, uint8_t ch, const uint8_t& color, const uint8_t& rle ) {
+void ssd1306::print_char_to_buffer ( const font_t& font, const uint8_t& x, const uint8_t& y, uint8_t ch, const uint8_t& color, const uint8_t& rle ) const {
     if (ch<0x20) return;			// Защита от пустых пикселей.
     ch -= 0x20;						// Первые 0x20 элементов отсутствуют.
     uint8_t byte_w = 0;				// Нужно узнать, сколько uint8_t приходится на одну строку.
@@ -190,10 +190,10 @@ void ssd1306::print_char_to_buffer ( const font_t& font, const uint8_t& x, const
         buffer_w-=8;		// Шаг - 8 бит.
     };
     const uint8_t* buf = font.chars[ch].image->p_array;	// Получаем указатель на 0-й байт 0-й строки.
-    if (rle == 1){			// Если используем rle, то указываем начало символа там.
+    if (rle == 1) {			// Если используем rle, то указываем начало символа там.
         mono_lcd_lib_rle rle(buf);
         volatile uint8_t buffer;
-        for (int y_loop = 0; y_loop<font.chars[ch].image->size; y_loop++){
+        for (int y_loop = 0; y_loop<font.chars[ch].image->size; y_loop++) {
             volatile int bit_loop = 7;
             buffer = rle.get_byte();
             for (volatile int x_loop = 0; x_loop<font.chars[ch].image->x; x_loop++){
@@ -202,7 +202,7 @@ void ssd1306::print_char_to_buffer ( const font_t& font, const uint8_t& x, const
                 };
                 bit_loop--;
                 if (bit_loop<0) {
-                    if ((x_loop+1) != font.chars[ch].image->x){	// Это защита от крисвого отображения. На случай, если шрифт имеет кратную 8 битам ширину. 8, 16, 24...
+                    if ((x_loop+1) != font.chars[ch].image->x){	// Это защита от кривого отображения. На случай, если шрифт имеет кратную 8 битам ширину. 8, 16, 24...
                         bit_loop = 7;
                         buffer = rle.get_byte();
                     };
@@ -230,7 +230,7 @@ void ssd1306::print_char_to_buffer ( const font_t& font, const uint8_t& x, const
 
 // rle = 1 - расшифровываем с помощью RLE.
 // rle = 0 - фигачим напрямую.
-void ssd1306::print_string_to_buffer (const font_t& font, uint8_t x, uint8_t y, char *string, uint8_t color, uint8_t rle){
+void ssd1306::print_string_to_buffer (const font_t& font, uint8_t x, uint8_t y, char *string, uint8_t color, uint8_t rle) const {
     uint16_t x_point = x, y_point = y;			// Чтобы следить за расположением пикселей.
     uint16_t loop_char = 0;
     while((string[loop_char] != 0)&&(string[loop_char] != '\n')){
@@ -243,7 +243,7 @@ void ssd1306::print_string_to_buffer (const font_t& font, uint8_t x, uint8_t y, 
 // Печатаем первые number_char символов строки.
 // rle = 1 - расшифровываем с помощью RLE.
 // rle = 0 - фигачим напрямую.
-void ssd1306::print_string_number_to_buffer ( const font_t& font, uint8_t x, uint8_t y, char *string, uint8_t number_char, uint8_t color, uint8_t rle ) {
+void ssd1306::print_string_number_to_buffer ( const font_t& font, uint8_t x, uint8_t y, char *string, uint8_t number_char, uint8_t color, uint8_t rle ) const {
     uint16_t x_point = x, y_point = y;			// Чтобы следить за расположением пикселей.
     for (uint8_t loop_char = 0; loop_char<number_char; loop_char++){
         this->print_char_to_buffer  ( font, x_point, y_point, string[loop_char], color, rle );
