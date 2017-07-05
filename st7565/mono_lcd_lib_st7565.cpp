@@ -12,6 +12,15 @@ void mono_lcd_lib_st7565::com_out ( uint8_t command ) const {
     cfg->cs->set();
 }
 
+void mono_lcd_lib_st7565::data_out ( uint8_t data ) const {
+    cfg->a0->set();
+    cfg->cs->reset();
+    this->spi->tx( &data, 1, 100 );
+    cfg->cs->set();
+}
+
+
+
 void mono_lcd_lib_st7565::set_brightness ( uint8_t val) const {
     this->com_out(CMD_SET_VOLUME_FIRST);
     this->com_out(CMD_SET_VOLUME_SECOND | (val & 0x3f));
@@ -53,4 +62,22 @@ void mono_lcd_lib_st7565::reset ( uint8_t contrast ) const {
   this->com_out(CMD_DISPLAY_ON);
   this->com_out(CMD_SET_ALLPTS_NORMAL);
   this->set_brightness(contrast);
+}
+
+void mono_lcd_lib_st7565::update ( void ) const {
+    for(int p = 0; p < 8; p++) {
+        this->com_out( CMD_SET_PAGE | p);
+        uint8_t col = 0;
+
+        /*
+         * 4, т.к. дисплей рассчитан на 132 пикселя, а в LCD их всего 128 (в ширину).
+         */
+        this->com_out( CMD_SET_COLUMN_LOWER | ((col + 4) & 0x0F));
+        this->com_out( CMD_SET_COLUMN_UPPER | (((col + 4) >> 4) & 0x0F));
+        this->com_out( CMD_RMW);
+
+        for( ; col < 128; col++) {
+            this->data_out( this->buf[(128*p)+col]);
+        }
+    }
 }

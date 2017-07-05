@@ -2,12 +2,6 @@
 
 #include "mono_lcd_lib_cfg.h"
 
-#define BLACK					1
-#define WHITE 					0
-
-#define LCDWIDTH 				128
-#define LCDHEIGHT 				64
-
 #define CMD_DISPLAY_OFF   		0xAE
 #define CMD_DISPLAY_ON    		0xAF
 
@@ -47,8 +41,6 @@
 #define CMD_NOP  				0xE3
 #define CMD_TEST  				0xF0
 
-#define ST7565_STARTBYTES 		1
-
 /*
  * Парметры SPI MOTOROLA, CPHA = 1, CPOL = 1.
  */
@@ -70,9 +62,13 @@ public:
 
     void    reinit          ( const spi_base* spi_obj ) const;
     void  reset ( uint8_t contrast ) const;
-    void com_out ( uint8_t command ) const;
     void set_brightness ( uint8_t val) const;
+    void update ( void ) const;
+
 private:
+
+    void com_out ( uint8_t command ) const;
+    void data_out ( uint8_t data ) const;
 
     mutable bool flag = false;  // Инициализирован ли LCD?
     mutable const spi_base* spi = nullptr;
