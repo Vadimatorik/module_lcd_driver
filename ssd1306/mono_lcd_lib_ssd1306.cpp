@@ -12,13 +12,13 @@ static const uint8_t ssd1306_init_command[] = {
     0x20, 0x8d, 0x14, 0xaf
 };
 
-void ssd1306::reinit (  const spi_base* spi_obj  ) const {
+void mono_lcd_lib_ssd1306::reinit (  const spi_base* spi_obj  ) const {
     this->mutex     = USER_OS_STATIC_MUTEX_CREATE( &this->mutex_buf );
     this->spi       = spi_obj;
 }
 
 // Инициализируем LCD.
-void ssd1306::reset ( void ) const {
+void mono_lcd_lib_ssd1306::reset ( void ) const {
     cfg->dc->reset();                   // Далее идут комманды.
     cfg->cs->set();                     // Переводим дисплей в невыбранное положение.
     // Перезагружаем дисплей.
@@ -39,7 +39,7 @@ void ssd1306::reset ( void ) const {
 }
 
 // Выбираем позицию на экране. Функция не следит за флагом SPI. CS так же не дергает.
-void ssd1306::set_pos_to_lcd ( const uint8_t& x, const uint8_t& y ) const {
+void mono_lcd_lib_ssd1306::set_pos_to_lcd ( const uint8_t& x, const uint8_t& y ) const {
     cfg->dc->reset(); // Далее идет комманда.
     uint8_t buffer_command[3];
     buffer_command[2] = 0xb0+y;
@@ -49,7 +49,7 @@ void ssd1306::set_pos_to_lcd ( const uint8_t& x, const uint8_t& y ) const {
 }
 
 // Выдаем данные из буфера.
-void ssd1306::update ( void ) const {
+void mono_lcd_lib_ssd1306::update ( void ) const {
     if ( this->flag == 0 ) return;		// Если экран еще не инициализирован - выходим.
     USER_OS_TAKE_MUTEX( this->mutex, portMAX_DELAY );   // Ждем, пока освободится SPI.
 
@@ -66,12 +66,12 @@ void ssd1306::update ( void ) const {
 }
 
 // Инициализируем LCD.
-void ssd1306::buf_reset ( void ) const {
+void mono_lcd_lib_ssd1306::buf_reset ( void ) const {
     memset( this->buf, 0, 1024 );
 }
 
 // Рисуем пиксель в LCD буфере.
-void ssd1306::point_set_buffer ( const uint8_t& x, const uint8_t& y ) const {
+void mono_lcd_lib_ssd1306::point_set_buffer ( const uint8_t& x, const uint8_t& y ) const {
     if ( ( x < 128 ) && ( y < 64 ) ) {
         this->buf[ ( y / 8 ) * 128 + x ] |=
                 1 << ( y % 8 );	// Особенности памяти...
@@ -79,14 +79,14 @@ void ssd1306::point_set_buffer ( const uint8_t& x, const uint8_t& y ) const {
 }
 
 // Рисуем пиксель в LCD буфере.
-void ssd1306::point_reset_buffer ( const uint8_t& x, const uint8_t& y ) const {
+void mono_lcd_lib_ssd1306::point_reset_buffer ( const uint8_t& x, const uint8_t& y ) const {
     if ( ( x < 128 ) && ( y < 64 ) ) {
         this->buf[ ( y / 8 ) * 128 + x ] &=
                 ( uint8_t )( ( ~( 1 << ( y % 8 ) ) ) );	// Особенности памяти...
     }
 }
 
-void ssd1306::set_pixel_buffer ( const uint8_t& x, const uint8_t& y, const uint8_t& color ) const {
+void mono_lcd_lib_ssd1306::set_pixel_buffer ( const uint8_t& x, const uint8_t& y, const uint8_t& color ) const {
     if ( color ) {
         this->point_set_buffer( x, y );
     } else {
@@ -94,7 +94,7 @@ void ssd1306::set_pixel_buffer ( const uint8_t& x, const uint8_t& y, const uint8
     }
 }
 
-void    ssd1306::fill_rect_to_buffer ( uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, const uint8_t& color ) const {
+void    mono_lcd_lib_ssd1306::fill_rect_to_buffer ( uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, const uint8_t& color ) const {
     uint8_t i;
 
     if ( x1 > x2 ) { // swap
@@ -125,7 +125,7 @@ void    ssd1306::fill_rect_to_buffer ( uint8_t x1, uint8_t y1, uint8_t x2, uint8
 }
 
 
-void ssd1306::draw_line_to_buffer ( uint8_t x1, uint8_t y1,const  uint8_t& x2, const uint8_t& y2, const uint8_t& color ) const {
+void mono_lcd_lib_ssd1306::draw_line_to_buffer ( uint8_t x1, uint8_t y1,const  uint8_t& x2, const uint8_t& y2, const uint8_t& color ) const {
     int deltaX, deltaY, signX, signY, error, error2;
     int dX, dY;
     uint16_t x, y;
@@ -180,7 +180,7 @@ void ssd1306::draw_line_to_buffer ( uint8_t x1, uint8_t y1,const  uint8_t& x2, c
 // ch - символ на вывод UTF-8.
 // color цвет.
 // or - ореинтация экрана: 0 - портретная, 1 - горизонтальная.
-void ssd1306::print_char_to_buffer ( const font_t& font, const uint8_t& x, const uint8_t& y, uint8_t ch, const uint8_t& color, const uint8_t& rle ) const {
+void mono_lcd_lib_ssd1306::print_char_to_buffer ( const font_t& font, const uint8_t& x, const uint8_t& y, uint8_t ch, const uint8_t& color, const uint8_t& rle ) const {
     if (ch<0x20) return;			// Защита от пустых пикселей.
     ch -= 0x20;						// Первые 0x20 элементов отсутствуют.
     uint8_t byte_w = 0;				// Нужно узнать, сколько uint8_t приходится на одну строку.
@@ -230,7 +230,7 @@ void ssd1306::print_char_to_buffer ( const font_t& font, const uint8_t& x, const
 
 // rle = 1 - расшифровываем с помощью RLE.
 // rle = 0 - фигачим напрямую.
-void ssd1306::print_string_to_buffer (const font_t& font, uint8_t x, uint8_t y, char *string, uint8_t color, uint8_t rle) const {
+void mono_lcd_lib_ssd1306::print_string_to_buffer (const font_t& font, uint8_t x, uint8_t y, char *string, uint8_t color, uint8_t rle) const {
     uint16_t x_point = x, y_point = y;			// Чтобы следить за расположением пикселей.
     uint16_t loop_char = 0;
     while((string[loop_char] != 0)&&(string[loop_char] != '\n')){
@@ -243,7 +243,7 @@ void ssd1306::print_string_to_buffer (const font_t& font, uint8_t x, uint8_t y, 
 // Печатаем первые number_char символов строки.
 // rle = 1 - расшифровываем с помощью RLE.
 // rle = 0 - фигачим напрямую.
-void ssd1306::print_string_number_to_buffer ( const font_t& font, uint8_t x, uint8_t y, char *string, uint8_t number_char, uint8_t color, uint8_t rle ) const {
+void mono_lcd_lib_ssd1306::print_string_number_to_buffer ( const font_t& font, uint8_t x, uint8_t y, char *string, uint8_t number_char, uint8_t color, uint8_t rle ) const {
     uint16_t x_point = x, y_point = y;			// Чтобы следить за расположением пикселей.
     for (uint8_t loop_char = 0; loop_char<number_char; loop_char++){
         this->print_char_to_buffer  ( font, x_point, y_point, string[loop_char], color, rle );
@@ -255,7 +255,7 @@ void ssd1306::print_string_number_to_buffer ( const font_t& font, uint8_t x, uin
 
 // Рисуем рамку заданной толщины.
 // Толщина от 0.
-void    ssd1306::draw_frame_to_buffer ( const uint8_t& x, uint8_t& y, const uint8_t& width, const uint8_t& height, const uint8_t& thickness, const uint8_t& color) const {
+void    mono_lcd_lib_ssd1306::draw_frame_to_buffer ( const uint8_t& x, uint8_t& y, const uint8_t& width, const uint8_t& height, const uint8_t& thickness, const uint8_t& color) const {
     // Рисуем рамку 4-мя прямоугольниками.
     this->fill_rect_to_buffer( x, y, x+width, y+thickness, color);	// Слева направо от левого верхнего угла.
     this->fill_rect_to_buffer( x, y, x+thickness, y+height,	color);	// С левого верхнего угла вниз.
@@ -264,7 +264,7 @@ void    ssd1306::draw_frame_to_buffer ( const uint8_t& x, uint8_t& y, const uint
 }
 
 // Рисуем прямоугольник и внутри него рамку заданной толщены и цвета.
-void    ssd1306::fill_rect_and_frame ( const uint8_t& x, uint8_t& y, const uint8_t& width, const uint8_t& height, const uint8_t& thickness, const uint8_t& color_rect, const uint8_t& color_line ) const {
+void    mono_lcd_lib_ssd1306::fill_rect_and_frame ( const uint8_t& x, uint8_t& y, const uint8_t& width, const uint8_t& height, const uint8_t& thickness, const uint8_t& color_rect, const uint8_t& color_line ) const {
     this->fill_rect_to_buffer( x + thickness + 1, y + thickness + 1, x - thickness + width - 1, y + height - thickness - 1, color_rect);
     this->draw_frame_to_buffer( x, y, width, height, thickness, color_line);
 }
