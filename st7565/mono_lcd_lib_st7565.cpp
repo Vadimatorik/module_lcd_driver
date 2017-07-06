@@ -65,7 +65,7 @@ void mono_lcd_lib_st7565::data_out ( uint8_t data ) const {
 
 
 
-void mono_lcd_lib_st7565::set_brightness ( uint8_t val) const {
+void mono_lcd_lib_st7565::set_contrast ( uint8_t val) const {
     this->com_out(CMD_SET_VOLUME_FIRST);
     this->com_out(CMD_SET_VOLUME_SECOND | (val & 0x3f));
 }

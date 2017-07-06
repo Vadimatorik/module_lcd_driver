@@ -23,7 +23,7 @@ public:
 
     void    reinit          ( const spi_base* spi_obj ) const;
     void  reset ( void ) const;
-    void set_brightness ( uint8_t val) const;
+    void set_contrast ( uint8_t val) const;
     void on ( void ) const;
     void off ( void ) const;
 
