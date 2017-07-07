@@ -20,22 +20,21 @@ class mono_lcd_lib_st7565 : public mono_lcd_128x64_base {
 public:
     constexpr mono_lcd_lib_st7565 ( const mono_lcd_lib_st7565_cfg_t* const cfg, uint8_t* const buf ): cfg(cfg), buf(buf) {}
 
-
     void    reinit          ( const spi_base* spi_obj ) const;
-    void  reset ( void ) const;
-    void set_contrast ( uint8_t val) const;
-    void on ( void ) const;
-    void off ( void ) const;
+    void    reset ( void ) const;
+    void    set_contrast ( uint8_t val) const;
+    void    on ( void ) const;
+    void    off ( void ) const;
 
-    void update ( void ) const;
-    void clear ( void ) const;
+    void    update ( void ) const;
+    void    clear ( void ) const;
 
 
-    void buf_clear ( void ) const;
+    void    buf_clear ( void ) const;
 private:
 
-    void com_out ( uint8_t command ) const;
-    void data_out ( uint8_t data ) const;
+    void    com_out ( uint8_t command ) const;
+    void    data_out ( uint8_t data ) const;
 
     mutable bool flag = false;  // Инициализирован ли LCD?
     mutable const spi_base* spi = nullptr;
