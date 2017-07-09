@@ -21,7 +21,7 @@ public:
      * пользовательской ОС.
      */
 
-    virtual void    reinit          ( const spi_base* spi_obj ) const= 0;
+    virtual void    reinit          ( void ) const= 0;
 
     /*
      * Метод должен сбрасывать LCD в начальное состояние (но не включать!).

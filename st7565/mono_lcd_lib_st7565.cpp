@@ -44,22 +44,21 @@
 #define CMD_TEST                  0xF0
 
 
-void mono_lcd_lib_st7565::reinit (  const spi_base* spi_obj  ) const {
+void mono_lcd_lib_st7565::reinit ( void ) const {
     this->mutex     = USER_OS_STATIC_MUTEX_CREATE( &this->mutex_buf );
-    this->spi       = spi_obj;
 }
 
 void mono_lcd_lib_st7565::com_out ( uint8_t command ) const {
     cfg->a0->reset();
     cfg->cs->reset();
-    this->spi->tx( &command, 1, 100 );
+    ( *this->cfg->spi )->tx( &command, 1, 100 );
     cfg->cs->set();
 }
 
 void mono_lcd_lib_st7565::data_out ( uint8_t data ) const {
     cfg->a0->set();
     cfg->cs->reset();
-    this->spi->tx( &data, 1, 100 );
+    ( *this->cfg->spi )->tx( &data, 1, 100 );
     cfg->cs->set();
 }
 
@@ -117,30 +116,29 @@ void mono_lcd_lib_st7565::off ( void ) const {
 void mono_lcd_lib_st7565::update ( void ) const {
     for(int p = 0; p < 8; p++) {
         this->com_out( CMD_SET_PAGE | p);
-        uint8_t col = 0;
 
-        this->com_out( CMD_SET_COLUMN_LOWER | (col & 0x0F));
-        this->com_out( CMD_SET_COLUMN_UPPER | ((col >> 4) & 0x0F));
-        this->com_out( CMD_RMW);
+        this->com_out( CMD_SET_COLUMN_LOWER );
+        this->com_out( CMD_SET_COLUMN_UPPER );
 
-        for( ; col < 128; col++) {
-            this->data_out( this->buf[(128*p)+col] );
-        }
+        cfg->a0->set();
+        cfg->cs->reset();
+        ( *this->cfg->spi )->tx( &this->buf[(128*p)], 128, 100 );
+
+        cfg->cs->set();
     }
 }
 
 void mono_lcd_lib_st7565::clear ( void ) const {
+    uint8_t buf = 0;
     for(int p = 0; p < 8; p++) {
         this->com_out( CMD_SET_PAGE | p);
-        uint8_t col = 0;
+        this->com_out( CMD_SET_COLUMN_LOWER );
+        this->com_out( CMD_SET_COLUMN_UPPER );
 
-        this->com_out( CMD_SET_COLUMN_LOWER | ((col + 4) & 0x0F));
-        this->com_out( CMD_SET_COLUMN_UPPER | (((col + 4) >> 4) & 0x0F));
-        this->com_out( CMD_RMW);
-
-        for( ; col < 128; col++) {
-            this->data_out( 0 );
-        }
+        cfg->a0->set();
+        cfg->cs->reset();
+        ( *this->cfg->spi )->tx_one_item ( &buf, 128, 100 ) ;
+        cfg->cs->set();
     }
 }
 
