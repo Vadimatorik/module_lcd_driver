@@ -10,7 +10,7 @@ struct mono_lcd_lib_st7565_cfg_t {
     const pin*          const a0;
     const pin*          const res;
     const pin*          const cs;
-          spi_base**    const spi;
+          spi_base*     const spi;
 };
 
 /*

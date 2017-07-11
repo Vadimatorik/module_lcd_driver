@@ -40,8 +40,8 @@
 #define CMD_SET_BOOSTER_234      0
 #define CMD_SET_BOOSTER_5          1
 #define CMD_SET_BOOSTER_6          3
-#define CMD_NOP                  0xE3
-#define CMD_TEST                  0xF0
+#define CMD_NOP                     0xE3
+#define CMD_TEST                    0xF0
 
 
 void mono_lcd_lib_st7565::reinit ( void ) const {
@@ -51,14 +51,14 @@ void mono_lcd_lib_st7565::reinit ( void ) const {
 void mono_lcd_lib_st7565::com_out ( uint8_t command ) const {
     cfg->a0->reset();
     cfg->cs->reset();
-    ( *this->cfg->spi )->tx( &command, 1, 100 );
+    this->cfg->spi ->tx( &command, 1, 100 );
     cfg->cs->set();
 }
 
 void mono_lcd_lib_st7565::data_out ( uint8_t data ) const {
     cfg->a0->set();
     cfg->cs->reset();
-    ( *this->cfg->spi )->tx( &data, 1, 100 );
+    this->cfg->spi ->tx( &data, 1, 100 );
     cfg->cs->set();
 }
 
@@ -122,7 +122,7 @@ void mono_lcd_lib_st7565::update ( void ) const {
 
         cfg->a0->set();
         cfg->cs->reset();
-        ( *this->cfg->spi )->tx( &this->buf[(128*p)], 128, 100 );
+        this->cfg->spi ->tx( &this->buf[(128*p)], 128, 100 );
 
         cfg->cs->set();
     }
@@ -137,7 +137,7 @@ void mono_lcd_lib_st7565::clear ( void ) const {
 
         cfg->a0->set();
         cfg->cs->reset();
-        ( *this->cfg->spi )->tx_one_item ( &buf, 128, 100 ) ;
+        this->cfg->spi ->tx_one_item ( &buf, 128, 100 ) ;
         cfg->cs->set();
     }
 }
