@@ -13,9 +13,8 @@ static const uint8_t ssd1306_init_command[] = {
     0x20, 0x8d, 0x14, 0xaf
 };
 
-void mono_lcd_lib_ssd1306::reinit (  const spi_base* spi_obj  ) const {
+mono_lcd_lib_ssd1306::mono_lcd_lib_ssd1306 ( const mono_lcd_lib_ssd1306_cfg_t* const cfg, uint8_t* const buf ) : cfg(cfg), buf(buf) {
     this->mutex     = USER_OS_STATIC_MUTEX_CREATE( &this->mutex_buf );
-    this->spi       = spi_obj;
 }
 
 // Инициализируем LCD.
@@ -31,7 +30,7 @@ void mono_lcd_lib_ssd1306::reset ( void ) const {
     USER_OS_TAKE_MUTEX( this->mutex, portMAX_DELAY );   // Ждем, пока освободится SPI.
 
     cfg->cs->reset();  	// Выбираем наш дисплей.
-    this->spi->tx( ( void* )ssd1306_init_command, sizeof( ssd1306_init_command ), 100 );
+    this->cfg->p_spi->tx( ssd1306_init_command, sizeof( ssd1306_init_command ), 100 );
     cfg->cs->reset();
 
     USER_OS_GIVE_MUTEX( this->mutex );	// Разрешаем использование SPI другим потокам.
@@ -57,7 +56,7 @@ void mono_lcd_lib_ssd1306::set_pos_to_lcd ( const uint8_t& x, const uint8_t& y )
     buffer_command[2] = 0xb0+y;
     buffer_command[1] = ( ( x & 0xf0 ) >> 4 ) | 0x10;
     buffer_command[0] = ( x & 0x0f ) | 0x01;
-    this->spi->tx( buffer_command, 3, 100 );
+    this->cfg->p_spi->tx( buffer_command, 3, 100 );
 }
 
 // Выдаем данные из буфера.
@@ -71,7 +70,7 @@ void mono_lcd_lib_ssd1306::update ( void ) const {
 
     cfg->dc->set(); ; // Далее идут данные.
 
-    this->spi->tx( this->buf, 1024, 100 );
+    this->cfg->p_spi->tx( this->buf, 1024, 100 );
 
     cfg->cs->set();// Отсоединяем SPI от дисплея.
     USER_OS_GIVE_MUTEX( this->mutex );	// Разрешаем использование SPI другим потокам.

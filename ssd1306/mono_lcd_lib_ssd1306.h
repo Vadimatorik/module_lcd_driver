@@ -7,9 +7,10 @@
  */
 // Структура конфигурации ssd1306 в 8-ми битнос SPI режиме.
 struct mono_lcd_lib_ssd1306_cfg_t {
-    const pin*      const cs;
-    const pin*      const res;
-    const pin*      const dc;
+    const pin*                    const cs;
+    const pin*                    const res;
+    const pin*                    const dc;
+          spi_master_8bit_base*   const p_spi;
 };
 
 /*
@@ -18,9 +19,8 @@ struct mono_lcd_lib_ssd1306_cfg_t {
  */
 class mono_lcd_lib_ssd1306 : public mono_lcd_128x64_base {
 public:
-    constexpr mono_lcd_lib_ssd1306 ( const mono_lcd_lib_ssd1306_cfg_t* const cfg, uint8_t* const buf ): cfg(cfg), buf(buf) {}
+    mono_lcd_lib_ssd1306 ( const mono_lcd_lib_ssd1306_cfg_t* const cfg, uint8_t* const buf );
 
-    void    reinit          ( const spi_base* spi_obj ) const;
     void    reset           ( void ) const;
     void    update          ( void ) const; 				// Обновляем LCD из буффера, в котором рисовали.
     void    buf_clear       ( void ) const;                 // Очищаем буффер.
@@ -33,7 +33,6 @@ private:
     void    set_pixel_buffer ( const uint8_t& x, const uint8_t& y, const uint8_t& color ) const;
 
     mutable bool flag = false;  // Инициализирован ли LCD?
-    mutable const spi_base* spi = nullptr;
     const mono_lcd_lib_ssd1306_cfg_t* const cfg;
     uint8_t* const buf; // Сам буффер менять можно, но указетль на него - нет.
     // Для предотвращения попытки использовать LCD из разных потоков одновременно.

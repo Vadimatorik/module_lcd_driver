@@ -7,10 +7,10 @@
  */
 // Структура конфигурации ssd1306 в 8-ми битнос SPI режиме.
 struct mono_lcd_lib_st7565_cfg_t {
-    const pin*          const a0;
-    const pin*          const res;
-    const pin*          const cs;
-          spi_base*     const spi;
+    const pin*                    const a0;
+    const pin*                    const res;
+    const pin*                    const cs;
+          spi_master_8bit_base*   const p_spi;
 };
 
 /*
