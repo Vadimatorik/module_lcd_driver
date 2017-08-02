@@ -137,7 +137,7 @@ void mono_lcd_lib_st7565::clear ( void ) const {
 
         cfg->a0->set();
         cfg->cs->reset();
-        this->cfg->p_spi->tx_one_item ( &buf, 128, 100 ) ;
+        this->cfg->p_spi->tx_one_item ( buf, 128, 100 ) ;
         cfg->cs->set();
     }
 }
