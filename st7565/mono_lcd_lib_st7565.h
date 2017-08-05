@@ -1,16 +1,17 @@
 #pragma once
 
 #include "lcd_interface.h"
+#include "mk_hardware_interfaces_pin.h"
 
 /*
  * Парметры SPI MOTOROLA, CPHA = 1, CPOL = 1.
  */
 // Структура конфигурации ssd1306 в 8-ми битнос SPI режиме.
 struct mono_lcd_lib_st7565_cfg_t {
-    const pin*                    const a0;
-    const pin*                    const res;
-    const pin*                    const cs;
-          spi_master_8bit_base*   const p_spi;
+    const pin_base*                 const a0;
+    const pin_base*                 const res;
+    const pin_base*                 const cs;
+          spi_master_8bit_base*     const p_spi;
 };
 
 /*
