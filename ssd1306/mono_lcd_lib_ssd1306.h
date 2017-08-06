@@ -2,6 +2,8 @@
 
 #include "lcd_interface.h"
 #include "mk_hardware_interfaces_pin.h"
+#include "mk_hardware_interfaces_spi.h"
+#include "user_os.h"
 
 //
 // Парметры SPI MOTOROLA, CPHA = 1, CPOL = 1.
