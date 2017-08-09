@@ -22,9 +22,9 @@ struct mono_lcd_lib_st7565_cfg_t {
  */
 class mono_lcd_lib_st7565 : public mono_lcd_128x64_base {
 public:
-    constexpr mono_lcd_lib_st7565 ( const mono_lcd_lib_st7565_cfg_t* const cfg, uint8_t* const buf ): cfg(cfg), buf(buf) {}
 
-    void    reinit          ( void ) const;
+    mono_lcd_lib_st7565 ( const mono_lcd_lib_st7565_cfg_t* const cfg, uint8_t* const buf );
+
     void    reset           ( void ) const;
     void    set_contrast    ( uint8_t val) const;
     void    on              ( void ) const;

@@ -14,13 +14,6 @@ class mono_lcd_128x64_base {
 public:
     constexpr mono_lcd_128x64_base() {}
     /*
-     * Инициализация mutex-ов и прочего, не требующего
-     * пользовательской ОС.
-     */
-
-    virtual void    reinit          ( void ) const= 0;
-
-    /*
      * Метод должен сбрасывать LCD в начальное состояние (но не включать!).
      */
 
