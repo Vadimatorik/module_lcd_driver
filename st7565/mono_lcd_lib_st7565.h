@@ -23,7 +23,7 @@ struct mono_lcd_lib_st7565_cfg_t {
 class mono_lcd_lib_st7565 : public mono_lcd_128x64_base {
 public:
 
-    mono_lcd_lib_st7565 ( const mono_lcd_lib_st7565_cfg_t* const cfg, uint8_t* const buf );
+    mono_lcd_lib_st7565 ( const mono_lcd_lib_st7565_cfg_t* const cfg, uint8_t* const user_buf );
 
     void    reset           ( void ) const;
     void    set_contrast    ( uint8_t val) const;
@@ -40,9 +40,12 @@ private:
     void    com_out         ( uint8_t command ) const;
     void    data_out        ( uint8_t data ) const;
 
-    mutable bool flag = false;  // Инициализирован ли LCD?
+    mutable bool flag = false;          // Инициализирован ли LCD?
     const mono_lcd_lib_st7565_cfg_t* const cfg;
-    uint8_t* const buf; // Сам буффер менять можно, но указетль на него - нет.
+    uint8_t*    const user_buf;         // Сам буффер менять можно, но указетль на него - нет.
+    // Системный буфер для преобразования.
+    // Дисплей едресуется вертикальными столбцами по 8 бит в высоту и 1 ширину. И так 8 строк.
+    mutable uint8_t     system_buf[ 128 ] = { 0 };
     // Для предотвращения попытки использовать LCD из разных потоков одновременно.
     mutable USER_OS_STATIC_MUTEX_BUFFER     mutex_buf = USER_OS_STATIC_MUTEX_BUFFER_INIT_VALUE;
     mutable USER_OS_STATIC_MUTEX            mutex = NULL;

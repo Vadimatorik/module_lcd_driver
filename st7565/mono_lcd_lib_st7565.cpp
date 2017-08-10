@@ -44,7 +44,7 @@
 #define CMD_TEST                    0xF0
 
 
-mono_lcd_lib_st7565::mono_lcd_lib_st7565 ( const mono_lcd_lib_st7565_cfg_t* const cfg, uint8_t* const buf ): cfg(cfg), buf(buf) {
+mono_lcd_lib_st7565::mono_lcd_lib_st7565 ( const mono_lcd_lib_st7565_cfg_t* const cfg, uint8_t* const buf ): cfg(cfg), user_buf(buf) {
     this->mutex     = USER_OS_STATIC_MUTEX_CREATE( &this->mutex_buf );
 }
 
@@ -114,15 +114,23 @@ void mono_lcd_lib_st7565::off ( void ) const {
 }
 
 void mono_lcd_lib_st7565::update ( void ) const {
-    for(int p = 0; p < 8; p++) {
-        this->com_out( CMD_SET_PAGE | p);
-
-        this->com_out( CMD_SET_COLUMN_LOWER );
+    for ( int page_l = 0; page_l < 8; page_l++ ) {
+        this->com_out( CMD_SET_PAGE | page_l);
         this->com_out( CMD_SET_COLUMN_UPPER );
 
         cfg->a0->set();
         cfg->cs->reset();
-        this->cfg->p_spi->tx( &this->buf[(128*p)], 128, 100 );
+
+        memset( this->system_buf, 0, 128 );
+
+        for ( int string_l = 0; string_l < 8; string_l++ ) {
+        uint32_t us_p_string = page_l * 128 + string_l * 16;
+            for ( int column_l = 0; column_l < 128; column_l++ ) {
+                this->system_buf[ column_l ] |= ( ( this->user_buf[ us_p_string + column_l / 8 ] >> ( column_l % 8 ) ) & 1 ) << string_l;
+            }
+        }
+
+        this->cfg->p_spi->tx( this->system_buf, 128, 100 );
 
         cfg->cs->set();
     }
@@ -133,7 +141,6 @@ void mono_lcd_lib_st7565::clear ( void ) const {
     for(int p = 0; p < 8; p++) {
         this->com_out( CMD_SET_PAGE | p);
         this->com_out( CMD_SET_COLUMN_LOWER );
-        this->com_out( CMD_SET_COLUMN_UPPER );
 
         cfg->a0->set();
         cfg->cs->reset();
@@ -143,5 +150,5 @@ void mono_lcd_lib_st7565::clear ( void ) const {
 }
 
 void mono_lcd_lib_st7565::buf_clear ( void ) const {
-    memset(this->buf, 0, 1024);
+    memset(this->user_buf, 0, 1024);
 }
