@@ -71,9 +71,9 @@ void mono_lcd_lib_st7565::set_contrast ( uint8_t val) const {
 
 void mono_lcd_lib_st7565::reset ( void ) const {
         cfg->res->reset();
-        USER_OS_DELAY_MS(50);
+        USER_OS_DELAY_MS(5);
         cfg->res->set();
-        USER_OS_DELAY_MS(50);
+        USER_OS_DELAY_MS(5);
 
          // LCD bias select
         this->com_out(CMD_SET_BIAS_9);
@@ -86,18 +86,15 @@ void mono_lcd_lib_st7565::reset ( void ) const {
 
          // turn on voltage converter (VC=1, VR=0, VF=0)
         this->com_out(CMD_SET_POWER_CONTROL | 0x4);
-         // wait for 50% rising
-        USER_OS_DELAY_MS(50);
+        USER_OS_DELAY_MS(5);
 
          // turn on voltage regulator (VC=1, VR=1, VF=0)
         this->com_out(CMD_SET_POWER_CONTROL | 0x6);
-         // wait >=50ms
-        USER_OS_DELAY_MS(50);
+        USER_OS_DELAY_MS(5);
 
          // turn on voltage follower (VC=1, VR=1, VF=1)
         this->com_out(CMD_SET_POWER_CONTROL | 0x7);
-         // wait
-        USER_OS_DELAY_MS(10);
+        USER_OS_DELAY_MS(1);
 
          // set lcd operating voltage (regulator resistor, ref voltage resistor)
         this->com_out(CMD_SET_RESISTOR_RATIO | 0x6);
