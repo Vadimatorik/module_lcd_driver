@@ -47,6 +47,6 @@ private:
     // Дисплей едресуется вертикальными столбцами по 8 бит в высоту и 1 ширину. И так 8 строк.
     mutable uint8_t     system_buf[ 128 ] = { 0 };
     // Для предотвращения попытки использовать LCD из разных потоков одновременно.
-    mutable USER_OS_STATIC_MUTEX_BUFFER     mutex_buf = USER_OS_STATIC_MUTEX_BUFFER_INIT_VALUE;
+    mutable USER_OS_STATIC_MUTEX_BUFFER     mutex_buf;
     mutable USER_OS_STATIC_MUTEX            mutex = NULL;
 };
