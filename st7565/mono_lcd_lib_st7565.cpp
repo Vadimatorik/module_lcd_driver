@@ -137,7 +137,7 @@ void mono_lcd_lib_st7565::clear ( void ) const {
     uint8_t buf = 0;
     for(int p = 0; p < 8; p++) {
         this->com_out( CMD_SET_PAGE | p);
-        this->com_out( CMD_SET_COLUMN_LOWER );
+        this->com_out( CMD_SET_COLUMN_UPPER );
 
         cfg->a0->set();
         cfg->cs->reset();
