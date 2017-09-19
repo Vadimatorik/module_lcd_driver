@@ -5,6 +5,13 @@
 #include "mk_hardware_interfaces_spi.h"
 #include "user_os.h"
 
+enum class ST7565_MODE {
+    STANDARD        = 0,
+    IVERT_X         = 1,
+    IVERT_Y         = 2,
+    IVERT_X_AMD_Y   = 3
+};
+
 //
 // Парметры SPI MOTOROLA, CPHA = 1, CPOL = 1.
 //
@@ -14,6 +21,7 @@ struct mono_lcd_lib_st7565_cfg_t {
     const pin_base*                 const res;
     const pin_base*                 const cs;
           spi_master_8bit_base*     const p_spi;
+    const ST7565_MODE               mode;
 };
 
 /*

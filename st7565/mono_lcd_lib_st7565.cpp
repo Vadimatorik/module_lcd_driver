@@ -120,10 +120,22 @@ void mono_lcd_lib_st7565::update ( void ) const {
 
         memset( this->system_buf, 0, 128 );
 
-        for ( int string_l = 0; string_l < 8; string_l++ ) {
-        uint32_t us_p_string = page_l * 128 + string_l * 16;
-            for ( int column_l = 0; column_l < 128; column_l++ ) {
-                this->system_buf[ column_l ] |= ( ( this->user_buf[ us_p_string + column_l / 8 ] >> ( column_l % 8 ) ) & 1 ) << string_l;
+        for ( uint32_t string_l = 0; string_l < 8; string_l++ ) {
+            uint32_t us_p_string;
+            if ( ( this->cfg->mode == ST7565_MODE::IVERT_Y ) || ( this->cfg->mode == ST7565_MODE::IVERT_X_AMD_Y ) ) {
+                us_p_string = (7 - page_l) * 128 + ( 7 - string_l ) * 16;
+            } else {
+                us_p_string = page_l * 128 + string_l * 16;
+            }
+            for ( uint32_t column_l = 0; column_l < 128; column_l++ ) {
+                switch ( (uint32_t)this->cfg->mode ) {
+                case (uint32_t)ST7565_MODE::STANDARD:
+                case (uint32_t)ST7565_MODE::IVERT_Y:
+                    this->system_buf[ column_l ] |= ( ( this->user_buf[ us_p_string + column_l / 8 ] >> ( column_l % 8 ) ) & 1 ) << string_l; break;
+                case (uint32_t)ST7565_MODE::IVERT_X:
+                case (uint32_t)ST7565_MODE::IVERT_X_AMD_Y:
+                    this->system_buf[ 127 - column_l ] |= ( ( this->user_buf[ us_p_string + column_l / 8 ] >> ( column_l % 8 ) ) & 1 ) << string_l; break;
+                }
             }
         }
 
