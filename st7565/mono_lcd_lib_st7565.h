@@ -1,8 +1,8 @@
 #pragma once
 
 #include "lcd_interface.h"
-#include "mk_hardware_interfaces_pin.h"
-#include "mk_hardware_interfaces_spi.h"
+#include "mc_hardware_interfaces_pin.h"
+#include "mc_hardware_interfaces_spi.h"
 #include "user_os.h"
 
 enum class ST7565_MODE {
