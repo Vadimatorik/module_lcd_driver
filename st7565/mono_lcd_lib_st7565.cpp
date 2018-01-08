@@ -70,36 +70,37 @@ void mono_lcd_lib_st7565::set_contrast ( uint8_t val) const {
 }
 
 void mono_lcd_lib_st7565::reset ( void ) const {
-        cfg->res->reset();
-        USER_OS_DELAY_MS(5);
-        cfg->res->set();
-        USER_OS_DELAY_MS(5);
+	cfg->cs->set();
+	cfg->res->reset();
+	USER_OS_DELAY_MS(5);
+	cfg->res->set();
+    USER_OS_DELAY_MS(5);
 
-         // LCD bias select
-        this->com_out(CMD_SET_BIAS_9);
-          // ADC select
-        this->com_out(CMD_SET_ADC_REVERSE);
-          // SHL select
-        this->com_out(CMD_SET_COM_NORMAL);
-        // Initial display line
-        this->com_out(CMD_SET_DISP_START_LINE);
+    // LCD bias select
+	this->com_out(CMD_SET_BIAS_9);
+	// ADC select
+	this->com_out(CMD_SET_ADC_REVERSE);
+	// SHL select
+	this->com_out(CMD_SET_COM_NORMAL);
+	// Initial display line
+	this->com_out(CMD_SET_DISP_START_LINE);
 
-         // turn on voltage converter (VC=1, VR=0, VF=0)
-        this->com_out(CMD_SET_POWER_CONTROL | 0x4);
-        USER_OS_DELAY_MS(5);
+	// turn on voltage converter (VC=1, VR=0, VF=0)
+	this->com_out(CMD_SET_POWER_CONTROL | 0x4);
+	USER_OS_DELAY_MS(5);
 
-         // turn on voltage regulator (VC=1, VR=1, VF=0)
-        this->com_out(CMD_SET_POWER_CONTROL | 0x6);
-        USER_OS_DELAY_MS(5);
+	// turn on voltage regulator (VC=1, VR=1, VF=0)
+	this->com_out(CMD_SET_POWER_CONTROL | 0x6);
+	USER_OS_DELAY_MS(5);
 
-         // turn on voltage follower (VC=1, VR=1, VF=1)
-        this->com_out(CMD_SET_POWER_CONTROL | 0x7);
-        USER_OS_DELAY_MS(1);
+	// turn on voltage follower (VC=1, VR=1, VF=1)
+	this->com_out(CMD_SET_POWER_CONTROL | 0x7);
+	USER_OS_DELAY_MS(1);
 
-         // set lcd operating voltage (regulator resistor, ref voltage resistor)
-        this->com_out(CMD_SET_RESISTOR_RATIO | 0x6);
+	// set lcd operating voltage (regulator resistor, ref voltage resistor)
+	this->com_out(CMD_SET_RESISTOR_RATIO | 0x6);
 
-        this->com_out(CMD_SET_ALLPTS_NORMAL);
+	this->com_out(CMD_SET_ALLPTS_NORMAL);
 }
 
 void mono_lcd_lib_st7565::on ( void ) const {
