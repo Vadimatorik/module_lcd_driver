@@ -48,73 +48,98 @@ mono_lcd_lib_st7565::mono_lcd_lib_st7565 ( const mono_lcd_lib_st7565_cfg_t* cons
     this->mutex     = USER_OS_STATIC_MUTEX_CREATE( &this->mutex_buf );
 }
 
-void mono_lcd_lib_st7565::com_out ( uint8_t command ) const {
+BASE_RESULT mono_lcd_lib_st7565::com_out ( uint8_t command ) const {
     cfg->a0->reset();
     cfg->cs->reset();
-    this->cfg->p_spi->tx( &command, 1, 100 );
+	BASE_RESULT r = this->cfg->p_spi->tx( &command, 1, 100 );
     cfg->cs->set();
+	return r;
 }
 
-void mono_lcd_lib_st7565::data_out ( uint8_t data ) const {
+BASE_RESULT mono_lcd_lib_st7565::data_out ( uint8_t data ) const {
     cfg->a0->set();
     cfg->cs->reset();
-    this->cfg->p_spi->tx( &data, 1, 100 );
+	BASE_RESULT r = this->cfg->p_spi->tx( &data, 1, 100 );
     cfg->cs->set();
+	return r;
 }
 
 
 
-void mono_lcd_lib_st7565::set_contrast ( uint8_t val) const {
-    this->com_out(CMD_SET_VOLUME_FIRST);
-    this->com_out(CMD_SET_VOLUME_SECOND | (val & 0x3f));
+BASE_RESULT mono_lcd_lib_st7565::set_contrast ( uint8_t val) const {
+	BASE_RESULT r = this->com_out(CMD_SET_VOLUME_FIRST);
+	check_result( r );
+	r = this->com_out(CMD_SET_VOLUME_SECOND | (val & 0x3f));
+	return r;
 }
 
-void mono_lcd_lib_st7565::reset ( void ) const {
+BASE_RESULT mono_lcd_lib_st7565::reset ( void ) const {
 	cfg->cs->set();
 	cfg->res->reset();
 	USER_OS_DELAY_MS(5);
 	cfg->res->set();
     USER_OS_DELAY_MS(5);
 
+	BASE_RESULT r;
+
     // LCD bias select
-	this->com_out(CMD_SET_BIAS_9);
+	r = this->com_out(CMD_SET_BIAS_9);
+	check_result( r );
+
 	// ADC select
-	this->com_out(CMD_SET_ADC_REVERSE);
+	r = this->com_out(CMD_SET_ADC_REVERSE);
+	check_result( r );
+
 	// SHL select
-	this->com_out(CMD_SET_COM_NORMAL);
+	r = this->com_out(CMD_SET_COM_NORMAL);
+	check_result( r );
+
 	// Initial display line
-	this->com_out(CMD_SET_DISP_START_LINE);
+	r = this->com_out(CMD_SET_DISP_START_LINE);
+	check_result( r );
 
 	// turn on voltage converter (VC=1, VR=0, VF=0)
-	this->com_out(CMD_SET_POWER_CONTROL | 0x4);
+	r = this->com_out(CMD_SET_POWER_CONTROL | 0x4);
+	check_result( r );
 	USER_OS_DELAY_MS(5);
 
 	// turn on voltage regulator (VC=1, VR=1, VF=0)
-	this->com_out(CMD_SET_POWER_CONTROL | 0x6);
+	r = this->com_out(CMD_SET_POWER_CONTROL | 0x6);
+	check_result( r );
 	USER_OS_DELAY_MS(5);
 
 	// turn on voltage follower (VC=1, VR=1, VF=1)
-	this->com_out(CMD_SET_POWER_CONTROL | 0x7);
+	r = this->com_out(CMD_SET_POWER_CONTROL | 0x7);
+	check_result( r );
 	USER_OS_DELAY_MS(1);
 
 	// set lcd operating voltage (regulator resistor, ref voltage resistor)
-	this->com_out(CMD_SET_RESISTOR_RATIO | 0x6);
+	r = this->com_out(CMD_SET_RESISTOR_RATIO | 0x6);
+	check_result( r );
 
-	this->com_out(CMD_SET_ALLPTS_NORMAL);
+	r = this->com_out(CMD_SET_ALLPTS_NORMAL);
+	return r;
 }
 
-void mono_lcd_lib_st7565::on ( void ) const {
-    this->com_out(CMD_DISPLAY_ON);
+BASE_RESULT mono_lcd_lib_st7565::on ( void ) const {
+	BASE_RESULT r;
+	r = this->com_out(CMD_DISPLAY_ON);
+	return r;
 }
 
-void mono_lcd_lib_st7565::off ( void ) const {
-    this->com_out(CMD_DISPLAY_OFF);
+BASE_RESULT mono_lcd_lib_st7565::off ( void ) const {
+	BASE_RESULT r;
+	r = this->com_out(CMD_DISPLAY_OFF);
+	return r;
 }
 
-void mono_lcd_lib_st7565::update ( void ) const {
+BASE_RESULT mono_lcd_lib_st7565::update ( void ) const {
+	BASE_RESULT r;
     for ( int page_l = 0; page_l < 8; page_l++ ) {
-        this->com_out( CMD_SET_PAGE | page_l);
-        this->com_out( CMD_SET_COLUMN_UPPER );
+		r = this->com_out( CMD_SET_PAGE | page_l);
+		check_result( r );
+		r = this->com_out( CMD_SET_COLUMN_UPPER );
+		check_result( r );
 
         cfg->a0->set();
         cfg->cs->reset();
@@ -140,23 +165,31 @@ void mono_lcd_lib_st7565::update ( void ) const {
             }
         }
 
-        this->cfg->p_spi->tx( this->system_buf, 128, 100 );
+		r = this->cfg->p_spi->tx( this->system_buf, 128, 100 );
+		check_result( r );
 
         cfg->cs->set();
     }
+	return r;
 }
 
-void mono_lcd_lib_st7565::clear ( void ) const {
+BASE_RESULT mono_lcd_lib_st7565::clear ( void ) const {
     uint8_t buf = 0;
+	BASE_RESULT r;
+
     for(int p = 0; p < 8; p++) {
-        this->com_out( CMD_SET_PAGE | p);
-        this->com_out( CMD_SET_COLUMN_UPPER );
+		r = this->com_out( CMD_SET_PAGE | p);
+		check_result( r );
+		r = this->com_out( CMD_SET_COLUMN_UPPER );
+		check_result( r );
 
         cfg->a0->set();
         cfg->cs->reset();
-        this->cfg->p_spi->tx_one_item ( buf, 128, 100 ) ;
+		r = this->cfg->p_spi->tx_one_item ( buf, 128, 100 );
+		check_result( r );
         cfg->cs->set();
     }
+	return r;
 }
 
 void mono_lcd_lib_st7565::buf_clear ( void ) const {

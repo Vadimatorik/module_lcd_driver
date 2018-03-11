@@ -18,7 +18,7 @@ mono_lcd_lib_ssd1306::mono_lcd_lib_ssd1306 ( const mono_lcd_lib_ssd1306_cfg_t* c
 }
 
 // Инициализируем LCD.
-void mono_lcd_lib_ssd1306::reset ( void ) const {
+BASE_RESULT mono_lcd_lib_ssd1306::reset ( void ) const {
     cfg->dc->reset();                   // Далее идут комманды.
     cfg->cs->set();                     // Переводим дисплей в невыбранное положение.
     // Перезагружаем дисплей.
@@ -30,50 +30,59 @@ void mono_lcd_lib_ssd1306::reset ( void ) const {
     USER_OS_TAKE_MUTEX( this->mutex, portMAX_DELAY );   // Ждем, пока освободится SPI.
 
     cfg->cs->reset();  	// Выбираем наш дисплей.
-    this->cfg->p_spi->tx( ssd1306_init_command, sizeof( ssd1306_init_command ), 100 );
-    cfg->cs->reset();
+	BASE_RESULT r;
+	r = this->cfg->p_spi->tx( ssd1306_init_command, sizeof( ssd1306_init_command ), 100 );
+	cfg->cs->reset();
+	USER_OS_GIVE_MUTEX( this->mutex );	// Разрешаем использование SPI другим потокам.
 
-    USER_OS_GIVE_MUTEX( this->mutex );	// Разрешаем использование SPI другим потокам.
-    this->flag = true;
-    this->update();					// Обновляем буффер.
+	check_result( r );
+	this->flag = true;
+	return this->update();					// Обновляем буффер.
 }
 
 /*
  * Включать/выключать LCD.
  */
-void mono_lcd_lib_ssd1306::on ( void ) const {
+BASE_RESULT mono_lcd_lib_ssd1306::on ( void ) const {
     while( true ) {}; // Поднять потом.
 }
 
-void mono_lcd_lib_ssd1306::off ( void ) const {
+BASE_RESULT mono_lcd_lib_ssd1306::off ( void ) const {
      while( true ) {}; // Поднять потом.
 }
 
 // Выбираем позицию на экране. Функция не следит за флагом SPI. CS так же не дергает.
-void mono_lcd_lib_ssd1306::set_pos_to_lcd ( const uint8_t& x, const uint8_t& y ) const {
+BASE_RESULT mono_lcd_lib_ssd1306::set_pos_to_lcd ( const uint8_t& x, const uint8_t& y ) const {
     cfg->dc->reset(); // Далее идет комманда.
     uint8_t buffer_command[3];
     buffer_command[2] = 0xb0+y;
     buffer_command[1] = ( ( x & 0xf0 ) >> 4 ) | 0x10;
     buffer_command[0] = ( x & 0x0f ) | 0x01;
-    this->cfg->p_spi->tx( buffer_command, 3, 100 );
+	BASE_RESULT r;
+	r = this->cfg->p_spi->tx( buffer_command, 3, 100 );
+	return r;
 }
 
 // Выдаем данные из буфера.
-void mono_lcd_lib_ssd1306::update ( void ) const {
-    if ( this->flag == 0 ) return;		// Если экран еще не инициализирован - выходим.
+BASE_RESULT mono_lcd_lib_ssd1306::update ( void ) const {
+	BASE_RESULT r;
+	if ( this->flag == 0 ) return BASE_RESULT::ERROR_INIT;		// Если экран еще не инициализирован - выходим.
     USER_OS_TAKE_MUTEX( this->mutex, portMAX_DELAY );   // Ждем, пока освободится SPI.
 
     cfg->cs->reset();               // Выбираем дисплей.
 
-    this->set_pos_to_lcd( 0, 0 );
+	r = this->set_pos_to_lcd( 0, 0 );
 
-    cfg->dc->set(); ; // Далее идут данные.
+	if ( r == BASE_RESULT::OK )	{
+		cfg->dc->set(); // Далее идут данные.
 
-    this->cfg->p_spi->tx( this->buf, 1024, 100 );
+		r = this->cfg->p_spi->tx( this->buf, 1024, 100 );
 
-    cfg->cs->set();// Отсоединяем SPI от дисплея.
+		cfg->cs->set();// Отсоединяем SPI от дисплея.
+	}
     USER_OS_GIVE_MUTEX( this->mutex );	// Разрешаем использование SPI другим потокам.
+
+	return r;
 }
 
 // Инициализируем LCD.

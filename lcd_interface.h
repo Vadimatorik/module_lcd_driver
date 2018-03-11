@@ -5,6 +5,7 @@
  * должен быть унаследован mono_lcd_128x64_base.
  */
 
+#include "mc_hardware_interfaces_base.h"
 
 /*
  * Этот класс является чисто виртуальным базовым классом
@@ -17,25 +18,25 @@ public:
      * Метод должен сбрасывать LCD в начальное состояние (но не включать!).
      */
 
-    virtual void  reset ( void ) const = 0;
+	virtual BASE_RESULT  reset ( void ) const = 0;
 
    /*
     * Включить/выключить дисплей.
     */
-    virtual void on ( void ) const = 0;
-    virtual void off ( void ) const = 0;
+	virtual BASE_RESULT on ( void ) const = 0;
+	virtual BASE_RESULT off ( void ) const = 0;
 
 
     /*
      * Вывод данных из буфера в сам LCD.
      */
-    virtual  void update ( void ) const = 0;
+	virtual BASE_RESULT update ( void ) const = 0;
 
 
     /*
      * Очистка непосредственно экрана.
      */
-    virtual  void clear ( void ) const = 0;
+	virtual BASE_RESULT clear ( void ) const = 0;
 
     /*
      * Очистка буфера экрана.
