@@ -10,29 +10,29 @@
 //
 // Структура конфигурации ssd1306 в 8-ми битнос SPI режиме.
 struct mono_lcd_lib_ssd1306_cfg_t {
-	const pin_base*					const cs;
-	const pin_base*					const res;
-	const pin_base*					const dc;
-			spi_master_8bit_base*	const p_spi;
+	PinBase*					const cs;
+	PinBase*					const res;
+	PinBase*					const dc;
+	SpiMaster8BitBase*			const s;
 };
 
 //
 // Любой из методов класса долен быть вызван только
 // внутри потока пользовательской операционной системы.
 //
-class mono_lcd_lib_ssd1306 : public mono_lcd_128x64_base {
+class Ssd1306 : public monoLcd128x64Base {
 public:
-	mono_lcd_lib_ssd1306 ( const mono_lcd_lib_ssd1306_cfg_t* const cfg, uint8_t* const buf );
+	Ssd1306 ( const mono_lcd_lib_ssd1306_cfg_t* const cfg, uint8_t* const buf );
 
-	BASE_RESULT	reset			( void ) const;
-	BASE_RESULT	update			( void ) const; 				// Обновляем LCD из буффера, в котором рисовали.
-	BASE_RESULT	on				( void ) const;
-	BASE_RESULT	off				( void ) const;
+	BASE_RESULT	reset			( void );
+	BASE_RESULT	update			( void ); 				// Обновляем LCD из буффера, в котором рисовали.
+	BASE_RESULT	on				( void );
+	BASE_RESULT	off				( void );
 
-	void	buf_clear			( void ) const;				 // Очищаем буффер.
+	void		bufClear		( void );				 // Очищаем буффер.
 
 private:
-	BASE_RESULT set_pos_to_lcd ( const uint8_t& x, const uint8_t& y ) const;
+	BASE_RESULT set_pos_to_lcd ( const uint8_t& x, const uint8_t& y );
 
 	mutable bool flag = false;	// Инициализирован ли LCD?
 	const mono_lcd_lib_ssd1306_cfg_t* const cfg;

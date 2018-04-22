@@ -16,45 +16,45 @@ enum class ST7565_MODE {
 // Парметры SPI MOTOROLA, CPHA = 1, CPOL = 1.
 //
 // Структура конфигурации ssd1306 в 8-ми битнос SPI режиме.
-struct mono_lcd_lib_st7565_cfg_t {
-	const pin_base*					const a0;
-	const pin_base*					const res;
-	const pin_base*					const cs;
-	spi_master_8bit_base*			const p_spi;
-	const ST7565_MODE				mode;
+struct ST7565Cfg {
+	PinBase*					const a0;
+	PinBase*					const res;
+	PinBase*					const cs;
+	SpiMaster8BitBase*			const p_spi;
+	const ST7565_MODE			mode;
 };
 
 /*
  * Любой из методов класса долен быть вызван только
  * внутри потока пользовательской операционной системы.
  */
-class mono_lcd_lib_st7565 : public mono_lcd_128x64_base {
+class ST7565 : public monoLcd128x64Base {
 public:
 
-	mono_lcd_lib_st7565 ( const mono_lcd_lib_st7565_cfg_t* const cfg, uint8_t* const user_buf );
+	ST7565 ( const ST7565Cfg* const cfg, uint8_t* const userBuf );
 
-	BASE_RESULT	reset				( void )				const;
-	BASE_RESULT	set_contrast		( uint8_t val)			const;
-	BASE_RESULT	on					( void )				const;
-	BASE_RESULT	off					( void )				const;
+	BASE_RESULT	reset				( void );
+	BASE_RESULT	setContrast			( uint8_t val );
+	BASE_RESULT	on					( void );
+	BASE_RESULT	off					( void );
 
-	BASE_RESULT	update				( void )				const;
-	BASE_RESULT	clear				( void )				const;
+	BASE_RESULT	update				( void );
+	BASE_RESULT	clear				( void );
 
 
-	void	buf_clear				( void )				const;
+	void		bufClear			( void );
 
 private:
-	BASE_RESULT com_out				( uint8_t command )		const;
-	BASE_RESULT data_out			( uint8_t data )		const;
+	BASE_RESULT com_out				( uint8_t command );
+	BASE_RESULT data_out			( uint8_t data );
 
-	mutable bool flag = false;			// Инициализирован ли LCD?
-	const mono_lcd_lib_st7565_cfg_t* const cfg;
-	uint8_t*	const user_buf;		 // Сам буффер менять можно, но указетль на него - нет.
+	bool flag = false;			// Инициализирован ли LCD?
+	const ST7565Cfg* const cfg;
+	uint8_t*	const userBuf;		 // Сам буффер менять можно, но указетль на него - нет.
 	// Системный буфер для преобразования.
 	// Дисплей едресуется вертикальными столбцами по 8 бит в высоту и 1 ширину. И так 8 строк.
-	mutable uint8_t	 system_buf[ 128 ] = { 0 };
+	uint8_t	 system_buf[ 128 ] = { 0 };
 	// Для предотвращения попытки использовать LCD из разных потоков одновременно.
-	mutable USER_OS_STATIC_MUTEX_BUFFER			mutex_buf;
-	mutable USER_OS_STATIC_MUTEX				mutex = NULL;
+	USER_OS_STATIC_MUTEX_BUFFER			mutex_buf;
+	USER_OS_STATIC_MUTEX				mutex = NULL;
 };
