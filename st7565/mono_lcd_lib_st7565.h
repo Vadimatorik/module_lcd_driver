@@ -20,7 +20,7 @@ struct ST7565Cfg {
 	PinBase*					const a0;
 	PinBase*					const res;
 	PinBase*					const cs;
-	SpiMaster8BitBase*			const p_spi;
+	SpiMaster8BitBase*			const s;
 	const ST7565_MODE			mode;
 };
 

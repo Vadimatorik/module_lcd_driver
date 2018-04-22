@@ -52,7 +52,7 @@ ST7565::ST7565 ( const ST7565Cfg* const cfg, uint8_t* const buf ) :
 BASE_RESULT ST7565::com_out ( uint8_t command ) {
     cfg->a0->reset();
     cfg->cs->reset();
-	BASE_RESULT r = this->cfg->p_spi->tx( &command, 1, 100 );
+	BASE_RESULT r = this->cfg->s->tx( &command, 1, 100 );
     cfg->cs->set();
 	return r;
 }
@@ -60,7 +60,7 @@ BASE_RESULT ST7565::com_out ( uint8_t command ) {
 BASE_RESULT ST7565::data_out ( uint8_t data ) {
     cfg->a0->set();
     cfg->cs->reset();
-	BASE_RESULT r = this->cfg->p_spi->tx( &data, 1, 100 );
+	BASE_RESULT r = this->cfg->s->tx( &data, 1, 100 );
     cfg->cs->set();
 	return r;
 }
@@ -166,7 +166,7 @@ BASE_RESULT ST7565::update ( void ) {
             }
         }
 
-		r = this->cfg->p_spi->tx( this->system_buf, 128, 100 );
+		r = this->cfg->s->tx( this->system_buf, 128, 100 );
 		checkResult( r );
 
         cfg->cs->set();
@@ -186,7 +186,7 @@ BASE_RESULT ST7565::clear ( void ) {
 
         cfg->a0->set();
         cfg->cs->reset();
-		r = this->cfg->p_spi->txOneItem ( buf, 128, 100 );
+		r = this->cfg->s->txOneItem ( buf, 128, 100 );
 		checkResult( r );
         cfg->cs->set();
     }
