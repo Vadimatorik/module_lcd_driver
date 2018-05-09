@@ -1,5 +1,7 @@
 #include "mono_lcd_lib_st7565.h"
 
+#ifdef MODULE_MONO_LCD_ST7565_ENABLED
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -196,3 +198,5 @@ BASE_RESULT ST7565::clear ( void ) {
 void ST7565::bufClear ( void ) {
 	memset(this->userBuf, 0, 1024);
 }
+
+#endif

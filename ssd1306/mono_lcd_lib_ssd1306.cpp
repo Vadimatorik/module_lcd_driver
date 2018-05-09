@@ -1,5 +1,7 @@
 #include "mono_lcd_lib_ssd1306.h"
 
+#ifdef MODULE_MONO_LCD_SSD1306_ENABLED
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -89,3 +91,5 @@ BASE_RESULT Ssd1306::update ( void ) {
 void Ssd1306::bufClear ( void ) {
     memset( this->buf, 0, 1024 );
 }
+
+#endif

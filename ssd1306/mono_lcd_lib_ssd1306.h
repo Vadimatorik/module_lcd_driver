@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef MODULE_MONO_LCD_SSD1306_ENABLED
+
 #include "lcd_interface.h"
 #include "mc_hardware_interfaces_pin.h"
 #include "mc_hardware_interfaces_spi.h"
@@ -34,10 +36,12 @@ public:
 private:
 	BASE_RESULT set_pos_to_lcd ( const uint8_t& x, const uint8_t& y );
 
-	mutable bool flag = false;	// Инициализирован ли LCD?
+	bool flag = false;	// Инициализирован ли LCD?
 	const mono_lcd_lib_ssd1306_cfg_t* const cfg;
 	uint8_t* const buf; // Сам буффер менять можно, но указетль на него - нет.
 	// Для предотвращения попытки использовать LCD из разных потоков одновременно.
-	mutable USER_OS_STATIC_MUTEX_BUFFER	 mutex_buf;
-	mutable USER_OS_STATIC_MUTEX			mutex = nullptr;
+	USER_OS_STATIC_MUTEX_BUFFER	 mutex_buf;
+	USER_OS_STATIC_MUTEX			mutex = nullptr;
 };
+
+#endif

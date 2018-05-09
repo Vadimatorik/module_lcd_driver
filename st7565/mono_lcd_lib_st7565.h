@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef MODULE_MONO_LCD_ST7565_ENABLED
+
 #include "lcd_interface.h"
 #include "mc_hardware_interfaces_pin.h"
 #include "mc_hardware_interfaces_spi.h"
@@ -58,3 +60,5 @@ private:
 	USER_OS_STATIC_MUTEX_BUFFER			mutex_buf;
 	USER_OS_STATIC_MUTEX				mutex = NULL;
 };
+
+#endif
