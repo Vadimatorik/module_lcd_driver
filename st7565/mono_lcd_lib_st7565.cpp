@@ -51,39 +51,39 @@ ST7565::ST7565 ( const ST7565Cfg* const cfg, uint8_t* const buf ) :
     this->mutex     = USER_OS_STATIC_MUTEX_CREATE( &this->mutex_buf );
 }
 
-BASE_RESULT ST7565::com_out ( uint8_t command ) {
+BaseResult ST7565::com_out ( uint8_t command ) {
     cfg->a0->reset();
     cfg->cs->reset();
-	BASE_RESULT r = this->cfg->s->tx( &command, 1, 100 );
+	BaseResult r = this->cfg->s->tx( &command, 1, 100 );
     cfg->cs->set();
 	return r;
 }
 
-BASE_RESULT ST7565::data_out ( uint8_t data ) {
+BaseResult ST7565::data_out ( uint8_t data ) {
     cfg->a0->set();
     cfg->cs->reset();
-	BASE_RESULT r = this->cfg->s->tx( &data, 1, 100 );
+	BaseResult r = this->cfg->s->tx( &data, 1, 100 );
     cfg->cs->set();
 	return r;
 }
 
 
 
-BASE_RESULT ST7565::setContrast ( uint8_t val) {
-	BASE_RESULT r = this->com_out(CMD_SET_VOLUME_FIRST);
+BaseResult ST7565::setContrast ( uint8_t val) {
+	BaseResult r = this->com_out(CMD_SET_VOLUME_FIRST);
 	checkResult( r );
 	r = this->com_out(CMD_SET_VOLUME_SECOND | (val & 0x3f));
 	return r;
 }
 
-BASE_RESULT ST7565::reset ( void ) {
+BaseResult ST7565::reset ( void ) {
 	cfg->cs->set();
 	cfg->res->reset();
 	USER_OS_DELAY_MS(5);
 	cfg->res->set();
     USER_OS_DELAY_MS(5);
 
-	BASE_RESULT r;
+	BaseResult r;
 
     // LCD bias select
 	r = this->com_out(CMD_SET_BIAS_9);
@@ -124,20 +124,20 @@ BASE_RESULT ST7565::reset ( void ) {
 	return r;
 }
 
-BASE_RESULT ST7565::on ( void ) {
-	BASE_RESULT r;
+BaseResult ST7565::on ( void ) {
+	BaseResult r;
 	r = this->com_out(CMD_DISPLAY_ON);
 	return r;
 }
 
-BASE_RESULT ST7565::off ( void ) {
-	BASE_RESULT r;
+BaseResult ST7565::off ( void ) {
+	BaseResult r;
 	r = this->com_out(CMD_DISPLAY_OFF);
 	return r;
 }
 
-BASE_RESULT ST7565::update ( void ) {
-	BASE_RESULT r;
+BaseResult ST7565::update ( void ) {
+	BaseResult r;
     for ( int page_l = 0; page_l < 8; page_l++ ) {
 		r = this->com_out( CMD_SET_PAGE | page_l);
 		checkResult( r );
@@ -176,9 +176,9 @@ BASE_RESULT ST7565::update ( void ) {
 	return r;
 }
 
-BASE_RESULT ST7565::clear ( void ) {
+BaseResult ST7565::clear ( void ) {
     uint8_t buf = 0;
-	BASE_RESULT r;
+	BaseResult r;
 
     for(int p = 0; p < 8; p++) {
 		r = this->com_out( CMD_SET_PAGE | p);

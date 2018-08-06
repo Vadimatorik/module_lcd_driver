@@ -35,20 +35,20 @@ public:
 
 	ST7565 ( const ST7565Cfg* const cfg, uint8_t* const userBuf );
 
-	BASE_RESULT	reset				( void );
-	BASE_RESULT	setContrast			( uint8_t val );
-	BASE_RESULT	on					( void );
-	BASE_RESULT	off					( void );
+	BaseResult	reset				( void );
+	BaseResult	setContrast			( uint8_t val );
+	BaseResult	on					( void );
+	BaseResult	off					( void );
 
-	BASE_RESULT	update				( void );
-	BASE_RESULT	clear				( void );
+	BaseResult	update				( void );
+	BaseResult	clear				( void );
 
 
 	void		bufClear			( void );
 
 private:
-	BASE_RESULT com_out				( uint8_t command );
-	BASE_RESULT data_out			( uint8_t data );
+	BaseResult com_out				( uint8_t command );
+	BaseResult data_out			( uint8_t data );
 
 	bool flag = false;			// Инициализирован ли LCD?
 	const ST7565Cfg* const cfg;

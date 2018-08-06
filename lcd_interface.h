@@ -18,25 +18,25 @@ public:
 	 * Метод должен сбрасывать LCD в начальное состояние (но не включать!).
 	 */
 
-	virtual BASE_RESULT  reset		( void ) = 0;
+	virtual BaseResult  reset		( void ) = 0;
 
    /*
 	* Включить/выключить дисплей.
 	*/
-	virtual BASE_RESULT on			( void ) = 0;
-	virtual BASE_RESULT off			( void ) = 0;
+	virtual BaseResult on			( void ) = 0;
+	virtual BaseResult off			( void ) = 0;
 
 
 	/*
 	 * Вывод данных из буфера в сам LCD.
 	 */
-	virtual BASE_RESULT update		( void ) = 0;
+	virtual BaseResult update		( void ) = 0;
 
 
 	/*
 	 * Очистка непосредственно экрана.
 	 */
-	virtual BASE_RESULT clear		( void ) = 0;
+	virtual BaseResult clear		( void ) = 0;
 
 	/*
 	 * Очистка буфера экрана.
