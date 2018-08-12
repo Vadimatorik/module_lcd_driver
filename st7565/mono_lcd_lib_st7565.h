@@ -1,5 +1,7 @@
 #pragma once
 
+#include "project_config.h"
+
 #ifdef MODULE_MONO_LCD_ST7565_ENABLED
 
 #include "lcd_interface.h"
