@@ -6,148 +6,112 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define CMD_DISPLAY_OFF             0xAE
-#define CMD_DISPLAY_ON              0xAF
+#include "mono_lcd_lib_st7565_cmd.h"
 
-#define CMD_SET_DISP_START_LINE     0x40
-#define CMD_SET_PAGE                0xB0
-
-#define CMD_SET_COLUMN_UPPER        0x10
-#define CMD_SET_COLUMN_LOWER        0x00
-
-#define CMD_SET_ADC_NORMAL          0xA0
-#define CMD_SET_ADC_REVERSE         0xA1
-
-#define CMD_SET_DISP_NORMAL         0xA6
-#define CMD_SET_DISP_REVERSE        0xA7
-
-#define CMD_SET_ALLPTS_NORMAL       0xA4
-#define CMD_SET_ALLPTS_ON           0xA5
-#define CMD_SET_BIAS_9              0xA2
-#define CMD_SET_BIAS_7              0xA3
-
-#define CMD_RMW                     0xE0
-#define CMD_RMW_CLEAR               0xEE
-#define CMD_INTERNAL_RESET          0xE2
-#define CMD_SET_COM_NORMAL          0xC0
-#define CMD_SET_COM_REVERSE         0xC8
-#define CMD_SET_POWER_CONTROL       0x28
-#define CMD_SET_RESISTOR_RATIO      0x20
-#define CMD_SET_VOLUME_FIRST        0x81
-#define CMD_SET_VOLUME_SECOND       0
-#define CMD_SET_STATIC_OFF          0xAC
-#define CMD_SET_STATIC_ON           0xAD
-#define CMD_SET_STATIC_REG          0x0
-#define CMD_SET_BOOSTER_FIRST       0xF8
-#define CMD_SET_BOOSTER_234         0
-#define CMD_SET_BOOSTER_5           1
-#define CMD_SET_BOOSTER_6           3
-#define CMD_NOP                     0xE3
-#define CMD_TEST                    0xF0
-
+namespace MonoLcd {
 
 ST7565::ST7565 ( const ST7565Cfg* const cfg, uint8_t* const buf ) :
 	cfg( cfg ), userBuf( buf ) {
-    this->mutex     = USER_OS_STATIC_MUTEX_CREATE( &this->mutex_buf );
+    this->m     = USER_OS_STATIC_MUTEX_CREATE( &this->mb );
 }
 
-BaseResult ST7565::com_out ( uint8_t command ) {
+McHardwareInterfaces::BaseResult ST7565::comOut ( uint8_t command ) {
     cfg->a0->reset();
     cfg->cs->reset();
-	BaseResult r = this->cfg->s->tx( &command, 1, 100 );
+	McHardwareInterfaces::BaseResult r = this->cfg->s->tx( &command, 1, 100 );
     cfg->cs->set();
 	return r;
 }
 
-BaseResult ST7565::data_out ( uint8_t data ) {
+McHardwareInterfaces::BaseResult ST7565::dataOut ( uint8_t data ) {
     cfg->a0->set();
     cfg->cs->reset();
-	BaseResult r = this->cfg->s->tx( &data, 1, 100 );
+	McHardwareInterfaces::BaseResult r = this->cfg->s->tx( &data, 1, 100 );
     cfg->cs->set();
 	return r;
 }
 
 
 
-BaseResult ST7565::setContrast ( uint8_t val) {
-	BaseResult r = this->com_out(CMD_SET_VOLUME_FIRST);
+McHardwareInterfaces::BaseResult ST7565::setContrast ( uint8_t val) {
+	McHardwareInterfaces::BaseResult r = this->comOut(CMD_SET_VOLUME_FIRST);
 	checkResult( r );
-	r = this->com_out(CMD_SET_VOLUME_SECOND | (val & 0x3f));
+	r = this->comOut(CMD_SET_VOLUME_SECOND | (val & 0x3f));
 	return r;
 }
 
-BaseResult ST7565::reset ( void ) {
+McHardwareInterfaces::BaseResult ST7565::reset ( void ) {
 	cfg->cs->set();
 	cfg->res->reset();
 	USER_OS_DELAY_MS(5);
 	cfg->res->set();
     USER_OS_DELAY_MS(5);
 
-	BaseResult r;
+	McHardwareInterfaces::BaseResult r;
 
     // LCD bias select
-	r = this->com_out(CMD_SET_BIAS_9);
+	r = this->comOut(CMD_SET_BIAS_9);
 	checkResult( r );
 
 	// ADC select
-	r = this->com_out(CMD_SET_ADC_REVERSE);
+	r = this->comOut(CMD_SET_ADC_REVERSE);
 	checkResult( r );
 
 	// SHL select
-	r = this->com_out(CMD_SET_COM_NORMAL);
+	r = this->comOut(CMD_SET_COM_NORMAL);
 	checkResult( r );
 
 	// Initial display line
-	r = this->com_out(CMD_SET_DISP_START_LINE);
+	r = this->comOut(CMD_SET_DISP_START_LINE);
 	checkResult( r );
 
 	// turn on voltage converter (VC=1, VR=0, VF=0)
-	r = this->com_out(CMD_SET_POWER_CONTROL | 0x4);
+	r = this->comOut(CMD_SET_POWER_CONTROL | 0x4);
 	checkResult( r );
 	USER_OS_DELAY_MS(5);
 
 	// turn on voltage regulator (VC=1, VR=1, VF=0)
-	r = this->com_out(CMD_SET_POWER_CONTROL | 0x6);
+	r = this->comOut(CMD_SET_POWER_CONTROL | 0x6);
 	checkResult( r );
 	USER_OS_DELAY_MS(5);
 
 	// turn on voltage follower (VC=1, VR=1, VF=1)
-	r = this->com_out(CMD_SET_POWER_CONTROL | 0x7);
+	r = this->comOut(CMD_SET_POWER_CONTROL | 0x7);
 	checkResult( r );
 	USER_OS_DELAY_MS(1);
 
 	// set lcd operating voltage (regulator resistor, ref voltage resistor)
-	r = this->com_out(CMD_SET_RESISTOR_RATIO | 0x6);
+	r = this->comOut(CMD_SET_RESISTOR_RATIO | 0x6);
 	checkResult( r );
 
-	r = this->com_out(CMD_SET_ALLPTS_NORMAL);
+	r = this->comOut(CMD_SET_ALLPTS_NORMAL);
 	return r;
 }
 
-BaseResult ST7565::on ( void ) {
-	BaseResult r;
-	r = this->com_out(CMD_DISPLAY_ON);
+McHardwareInterfaces::BaseResult ST7565::on ( void ) {
+	McHardwareInterfaces::BaseResult r;
+	r = this->comOut(CMD_DISPLAY_ON);
 	return r;
 }
 
-BaseResult ST7565::off ( void ) {
-	BaseResult r;
-	r = this->com_out(CMD_DISPLAY_OFF);
+McHardwareInterfaces::BaseResult ST7565::off ( void ) {
+	McHardwareInterfaces::BaseResult r;
+	r = this->comOut(CMD_DISPLAY_OFF);
 	return r;
 }
 
-BaseResult ST7565::update ( void ) {
-	BaseResult r;
+McHardwareInterfaces::BaseResult ST7565::update ( void ) {
+	McHardwareInterfaces::BaseResult r;
     for ( int page_l = 0; page_l < 8; page_l++ ) {
-		r = this->com_out( CMD_SET_PAGE | page_l);
+		r = this->comOut( CMD_SET_PAGE | page_l);
 		checkResult( r );
-		r = this->com_out( CMD_SET_COLUMN_UPPER );
+		r = this->comOut( CMD_SET_COLUMN_UPPER );
 		checkResult( r );
 
         cfg->a0->set();
         cfg->cs->reset();
 
-        memset( this->system_buf, 0, 128 );
+        memset( this->lcdImage, 0, 128 );
 
         for ( uint32_t string_l = 0; string_l < 8; string_l++ ) {
             uint32_t us_p_string;
@@ -160,15 +124,15 @@ BaseResult ST7565::update ( void ) {
                 switch ( (uint32_t)this->cfg->mode ) {
                 case (uint32_t)ST7565_MODE::STANDARD:
                 case (uint32_t)ST7565_MODE::IVERT_Y:
-					this->system_buf[ column_l ] |= ( ( this->userBuf[ us_p_string + column_l / 8 ] >> ( column_l % 8 ) ) & 1 ) << string_l; break;
+					this->lcdImage[ column_l ] |= ( ( this->userBuf[ us_p_string + column_l / 8 ] >> ( column_l % 8 ) ) & 1 ) << string_l; break;
                 case (uint32_t)ST7565_MODE::IVERT_X:
                 case (uint32_t)ST7565_MODE::IVERT_X_AMD_Y:
-					this->system_buf[ 127 - column_l ] |= ( ( this->userBuf[ us_p_string + column_l / 8 ] >> ( column_l % 8 ) ) & 1 ) << string_l; break;
+					this->lcdImage[ 127 - column_l ] |= ( ( this->userBuf[ us_p_string + column_l / 8 ] >> ( column_l % 8 ) ) & 1 ) << string_l; break;
                 }
             }
         }
 
-		r = this->cfg->s->tx( this->system_buf, 128, 100 );
+		r = this->cfg->s->tx( this->lcdImage, 128, 100 );
 		checkResult( r );
 
         cfg->cs->set();
@@ -176,14 +140,14 @@ BaseResult ST7565::update ( void ) {
 	return r;
 }
 
-BaseResult ST7565::clear ( void ) {
+McHardwareInterfaces::BaseResult ST7565::lcdClear ( void ) {
     uint8_t buf = 0;
-	BaseResult r;
+	McHardwareInterfaces::BaseResult r;
 
     for(int p = 0; p < 8; p++) {
-		r = this->com_out( CMD_SET_PAGE | p);
+		r = this->comOut( CMD_SET_PAGE | p);
 		checkResult( r );
-		r = this->com_out( CMD_SET_COLUMN_UPPER );
+		r = this->comOut( CMD_SET_COLUMN_UPPER );
 		checkResult( r );
 
         cfg->a0->set();
@@ -197,6 +161,8 @@ BaseResult ST7565::clear ( void ) {
 
 void ST7565::bufClear ( void ) {
 	memset(this->userBuf, 0, 1024);
+}
+
 }
 
 #endif

@@ -1,3 +1,42 @@
+/*
+
+@startuml
+
+MonoLcd.ST7565		--o			McHardwareInterfaces.Pin
+MonoLcd.ST7565		--o			McHardwareInterfaces.SpiMaster8Bit
+MonoLcd.ST7565		..|>		MonoLcd.Base
+
+namespace MonoLcd {
+
+class ST7565 {
+	{field}-	bool								flagInitLcd
+	{field}-	const ST7565Cfg*					const cfg
+	{field}-	uint8_t*							const userBuf
+	{field}-	uint8_t							lcdImage[ 128 ]
+	{field}-	USER_OS_STATIC_MUTEX_BUFFER			mb
+	{field}-	USER_OS_STATIC_MUTEX				m
+
+	__Constructor__
+	{method}+	ST7565	( const ST7565Cfg*	const cfg,\n\t\t  uint8_t*			const userBuf )
+	__Public methods__
+	{method}+	McHardwareInterfaces::BaseResult	reset			( void )
+	{method}+	McHardwareInterfaces::BaseResult	setContrast	( uint8_t		val )
+	{method}+	McHardwareInterfaces::BaseResult	on			( void )
+	{method}+	McHardwareInterfaces::BaseResult	off			( void )
+	{method}+	McHardwareInterfaces::BaseResult	update		( void )
+	{method}+	McHardwareInterfaces::BaseResult	lcdClear		( void )
+	{method}+	void							bufClear		( void )
+	__Private methods__
+	{method}-	McHardwareInterfaces::BaseResult	comOut		( uint8_t		command );
+	{method}-	McHardwareInterfaces::BaseResult	dataOut		( uint8_t		data );
+}
+
+}
+
+@enduml
+
+*/
+
 #pragma once
 
 #include "project_config.h"
@@ -8,6 +47,8 @@
 #include "mc_hardware_interfaces_pin.h"
 #include "mc_hardware_interfaces_spi_master_8bit.h"
 #include "user_os.h"
+
+namespace MonoLcd {
 
 enum class ST7565_MODE {
 	STANDARD		= 0,
@@ -25,42 +66,43 @@ struct ST7565Cfg {
 	McHardwareInterfaces::Pin*					const res;
 	McHardwareInterfaces::Pin*					const cs;
 	McHardwareInterfaces::SpiMaster8Bit*		const s;
-	const ST7565_MODE								mode;
+	const ST7565_MODE							mode;
 };
 
 /*
  * Любой из методов класса долен быть вызван только
  * внутри потока пользовательской операционной системы.
  */
-class ST7565 : public monoLcd128x64Base {
+class ST7565 : public MonoLcd::Base {
 public:
 
-	ST7565 ( const ST7565Cfg* const cfg, uint8_t* const userBuf );
+	ST7565 (	const ST7565Cfg*	const cfg,
+				uint8_t*			const userBuf );
 
-	BaseResult	reset				( void );
-	BaseResult	setContrast			( uint8_t val );
-	BaseResult	on					( void );
-	BaseResult	off					( void );
-
-	BaseResult	update				( void );
-	BaseResult	clear				( void );
-
-
-	void		bufClear			( void );
+	McHardwareInterfaces::BaseResult	reset			(	void	);
+	McHardwareInterfaces::BaseResult	setContrast		(	uint8_t		val	);
+	McHardwareInterfaces::BaseResult	on				(	void 	);
+	McHardwareInterfaces::BaseResult	off				(	void	);
+	McHardwareInterfaces::BaseResult	update			(	void	);
+	McHardwareInterfaces::BaseResult	lcdClear			(	void	);
+	void								bufClear		( void );
 
 private:
-	BaseResult com_out				( uint8_t command );
-	BaseResult data_out			( uint8_t data );
+	McHardwareInterfaces::BaseResult	comOut			(	uint8_t		command	);
+	McHardwareInterfaces::BaseResult	dataOut			(	uint8_t		data	);
 
-	bool flag = false;			// Инициализирован ли LCD?
-	const ST7565Cfg* const cfg;
-	uint8_t*	const userBuf;		 // Сам буффер менять можно, но указетль на него - нет.
+private:
+	bool								flagInitLcd			= false;		// Инициализирован ли LCD?
+	const ST7565Cfg*					const cfg;
+	uint8_t*							const userBuf;		// Сам буффер менять можно, но указетль на него - нет.
 	// Системный буфер для преобразования.
 	// Дисплей едресуется вертикальными столбцами по 8 бит в высоту и 1 ширину. И так 8 строк.
-	uint8_t	 system_buf[ 128 ] = { 0 };
+	uint8_t								lcdImage[ 128 ]	= { 0 };
 	// Для предотвращения попытки использовать LCD из разных потоков одновременно.
-	USER_OS_STATIC_MUTEX_BUFFER			mutex_buf;
-	USER_OS_STATIC_MUTEX				mutex = NULL;
+	USER_OS_STATIC_MUTEX_BUFFER			mb;
+	USER_OS_STATIC_MUTEX				m					= nullptr;
 };
+
+}
 
 #endif
