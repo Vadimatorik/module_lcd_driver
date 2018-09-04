@@ -21,11 +21,11 @@ enum class ST7565_MODE {
 //
 // Структура конфигурации ssd1306 в 8-ми битнос SPI режиме.
 struct ST7565Cfg {
-	PinBase*					const a0;
-	PinBase*					const res;
-	PinBase*					const cs;
-	SpiMaster8BitBase*			const s;
-	const ST7565_MODE			mode;
+	McHardwareInterfaces::Pin*					const a0;
+	McHardwareInterfaces::Pin*					const res;
+	McHardwareInterfaces::Pin*					const cs;
+	McHardwareInterfaces::SpiMaster8Bit*		const s;
+	const ST7565_MODE								mode;
 };
 
 /*
