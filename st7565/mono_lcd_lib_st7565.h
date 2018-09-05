@@ -2,11 +2,11 @@
 
 @startuml
 
+namespace MonoLcd {
+
 MonoLcd.ST7565		--o			McHardwareInterfaces.Pin
 MonoLcd.ST7565		--o			McHardwareInterfaces.SpiMaster8Bit
 MonoLcd.ST7565		..|>		MonoLcd.Base
-
-namespace MonoLcd {
 
 class ST7565 {
 	{field}-	bool								flagInitLcd
