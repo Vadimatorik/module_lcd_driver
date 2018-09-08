@@ -33,7 +33,7 @@ McHardwareInterfaces::BaseResult ST7565::dataOut ( uint8_t data ) {
 
 
 
-McHardwareInterfaces::BaseResult ST7565::setContrast ( uint8_t val) {
+McHardwareInterfaces::BaseResult ST7565::setContrast ( uint8_t	val ) {
 	McHardwareInterfaces::BaseResult r = this->comOut(CMD_SET_VOLUME_FIRST);
 	checkResult( r );
 	r = this->comOut(CMD_SET_VOLUME_SECOND | (val & 0x3f));
