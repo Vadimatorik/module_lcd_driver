@@ -15,7 +15,6 @@ class ST7565 {
 	{field}-	uint8_t							lcdImage[ 128 ]
 	{field}-	USER_OS_STATIC_MUTEX_BUFFER			mb
 	{field}-	USER_OS_STATIC_MUTEX				m
-
 	__Constructor__
 	{method}+	ST7565	( const ST7565Cfg*	const cfg,\n\t\t  uint8_t*			const userBuf )
 	__Public methods__
