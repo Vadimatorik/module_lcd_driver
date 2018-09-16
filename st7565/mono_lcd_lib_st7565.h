@@ -49,6 +49,11 @@ class ST7565 {
 
 namespace MonoLcd {
 
+#define		checkResultAndBreak(baseResultVariable)										\
+				if ( baseResultVariable != McHardwareInterfaces::BaseResult::ok ) {		\
+					break;																\
+				}
+
 enum class ST7565_MODE {
 	STANDARD		= 0,
 	IVERT_X			= 1,
