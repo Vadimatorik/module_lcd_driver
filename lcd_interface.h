@@ -18,6 +18,7 @@ interface Base {
 @enduml
 
 */
+#pragma once
 
 #include "mc_hardware_interfaces_base.h"
 
