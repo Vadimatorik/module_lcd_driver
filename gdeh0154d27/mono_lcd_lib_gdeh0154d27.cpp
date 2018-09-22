@@ -14,7 +14,8 @@ GDEH0154D27::GDEH0154D27 ( const GDEH0154D27Cfg* const cfg, uint8_t* const buf )
 }
 
 McHardwareInterfaces::BaseResult GDEH0154D27::comOut ( uint8_t command ) {
-    cfg->dc->reset();
+	while( this->cfg->busy->read() == true ) {}
+	cfg->dc->reset();
     cfg->cs->reset();
 	McHardwareInterfaces::BaseResult r = this->cfg->s->tx( &command, 1, 10 );
     cfg->cs->set();
@@ -22,24 +23,25 @@ McHardwareInterfaces::BaseResult GDEH0154D27::comOut ( uint8_t command ) {
 }
 
 McHardwareInterfaces::BaseResult GDEH0154D27::dataOut ( uint8_t data ) {
-    cfg->dc->set();
+	while( this->cfg->busy->read() == true ) {}
+	cfg->dc->set();
     cfg->cs->reset();
 	McHardwareInterfaces::BaseResult r = this->cfg->s->tx( &data, 1, 10 );
     cfg->cs->set();
 	return r;
 }
 
-McHardwareInterfaces::BaseResult GDEH0154D27::sendCommandDriverOutputControl ( uint16_t a, uint8_t b ) {
+McHardwareInterfaces::BaseResult GDEH0154D27::sendCommandDriverOutputControl ( uint16_t yPixels ) {
 	McHardwareInterfaces::BaseResult r;
 
 	do {
 		r = this->comOut( 0x01 );
 		checkResultAndBreak( r );
-		r = this->dataOut( static_cast< uint8_t >( a ) );
+		r = this->dataOut( static_cast< uint8_t >( yPixels - 1 ) );
 		checkResultAndBreak( r );
-		r = this->dataOut( static_cast< uint8_t >( ( a >> 8 ) & 0x01 ) );
+		r = this->dataOut( static_cast< uint8_t >( ( ( yPixels - 1 ) >> 8 ) & 0x01 ) );
 		checkResultAndBreak( r );
-		r = this->dataOut( b );
+		r = this->dataOut( 0 );
 	} while ( false );
 
 	return r;
@@ -135,7 +137,7 @@ McHardwareInterfaces::BaseResult GDEH0154D27::sendCommandWriteLutRegister ( cons
 
 		cfg->dc->set();
 		cfg->cs->reset();
-		r = this->cfg->s->tx( lutRegister, 30, 10 );
+		r = this->cfg->s->tx( lutRegister, 30, 20 );
 		cfg->cs->set();
 	} while ( false );
 
@@ -179,6 +181,9 @@ McHardwareInterfaces::BaseResult GDEH0154D27::sendBuffer ( void ) {
 		cfg->cs->reset();
 		r = this->cfg->s->tx( this->userBuf, 5000, 100 );
 		cfg->cs->set();
+
+		r = this->comOut( 0xff );
+				checkResultAndBreak( r );
 	} while( false );
 
 	return r;
@@ -204,6 +209,23 @@ McHardwareInterfaces::BaseResult GDEH0154D27::sendCommandMasterActivation ( void
 	return r;
 }
 
+McHardwareInterfaces::BaseResult GDEH0154D27::sendCommandBoosterSoftstart( uint8_t a, uint8_t b, uint8_t c ) {
+	McHardwareInterfaces::BaseResult r;
+
+	do {
+		r = this->comOut( 0x0C );
+		checkResultAndBreak( r );
+		r = this->dataOut( a | ( 1 << 7 ) );
+		checkResultAndBreak( r );
+		r = this->dataOut( b | ( 1 << 7 ) );
+		checkResultAndBreak( r );
+		r = this->dataOut( c | ( 1 << 7 ) );
+		checkResultAndBreak( r );
+	} while ( false );
+
+	return r;
+}
+
 McHardwareInterfaces::BaseResult GDEH0154D27::reset ( void ) {
 	USER_OS_TAKE_MUTEX( this->m, portMAX_DELAY );
 
@@ -216,44 +238,92 @@ McHardwareInterfaces::BaseResult GDEH0154D27::reset ( void ) {
 		cfg->res->set();
 		USER_OS_DELAY_MS(10);
 
-		// Set the number of gate.
-		r = this->sendCommandDriverOutputControl( 0xC7, 0x0 );
+		r = this->sendCommandBoosterSoftstart( 0xd7, 0xd6, 0x9d );
+																														checkResultAndBreak( r );
+
+		r = this->sendCommandDriverOutputControl( 200 );
 		checkResultAndBreak( r );
 
-		/// Scan frequence setting (50hz).
-		r = this->sendCommandDriverOutputControl( 0x1b, 0 );
-		checkResultAndBreak( r );
-		r = this->sendCommandSetGateLineWidth( 0x0b );
-		checkResultAndBreak( r );
+		r = this->sendCommandSetDummyLinePeriod( 0x1a );
+				checkResultAndBreak( r );
 
-		r = sendCommandDataEntryModeSetting( 0x11 );
-		checkResultAndBreak( r );
+				r = this->sendCommandSetGateLineWidth( 0x08 );
+				checkResultAndBreak( r );
 
-		r = sendCommandSetRAMxAddress();
-		checkResultAndBreak( r );
-		r = sendCommandSetRAMyAddress();
-		checkResultAndBreak( r );
+				r = sendCommandDataEntryModeSetting( 0x01 );
+										checkResultAndBreak( r );
 
-		r = sendCommandWriteVcomRegister( 0x30 );
-		checkResultAndBreak( r );
+					r = sendCommandSetRAMxAddress();
+						checkResultAndBreak( r );
+					r = sendCommandSetRAMyAddress();
+					checkResultAndBreak( r );
 
-		static uint8_t LUT[ 30 ] = { 0 };
-		r = sendCommandWriteLutRegister( LUT );
 
-		r = sendCommandSetRamXAddressCounter( 0x00 );
-		checkResultAndBreak( r );
-		r = sendCommandSetRamYAddressCounter( 0xC7 );
-		checkResultAndBreak( r );
 
-		r = this->sendBuffer();
 
-		r = sendCommandDisplayUpdateControl2( 0xC7 );
-		checkResultAndBreak( r );
+											r = sendCommandWriteVcomRegister( 0x10 );
+													checkResultAndBreak( r );
 
-		while( this->cfg->busy->read() == true ) {
-			r = sendCommandMasterActivation();
-			checkResultAndBreak( r );
-		}
+
+
+
+
+
+													static uint8_t LUT[ 30 ] = {	0x50, 0xAA, 0x55, 0xAA, 0x11,
+																							0x00, 0x00, 0x00, 0x00, 0x00,
+																							0x00, 0x00, 0x00, 0x00, 0x00,
+																							0x00, 0x00, 0x00, 0x00, 0x00,
+																							0xFF, 0xFF, 0x1F, 0x00, 0x00,
+																							0x00, 0x00, 0x00, 0x00, 0x00 };
+															r = sendCommandWriteLutRegister( LUT );
+
+
+
+
+															r = sendCommandSetRamXAddressCounter( 0x00 );
+																								checkResultAndBreak( r );
+																								r = sendCommandSetRamYAddressCounter( 0x00 );
+																								checkResultAndBreak( r );
+
+
+																								r = this->sendBuffer();
+
+																								r = sendCommandDisplayUpdateControl2( 0xc0 );
+																										checkResultAndBreak( r );
+
+
+
+																												r = sendCommandDisplayUpdateControl2( 0xC4 );
+																														checkResultAndBreak( r );
+																										r = sendCommandMasterActivation();
+					while( this->cfg->busy->read() == true ) {
+					//	r = sendCommandMasterActivation();
+				//		checkResultAndBreak( r );
+					/*	cfg->dc->reset();
+						    cfg->cs->reset();
+						    uint8_t c = 0x20;
+							r = this->cfg->s->tx( &c, 1, 10 );
+						    cfg->cs->set();
+						checkResultAndBreak( r );*/
+									}
+
+
+
+
+
+
+
+/*
+
+
+
+
+
+
+
+
+
+*/
 
 	} while ( false );
 

@@ -49,8 +49,7 @@ private:
 	McHardwareInterfaces::BaseResult	comOut								(	uint8_t				command	);
 	McHardwareInterfaces::BaseResult	dataOut								(	uint8_t				data	);
 
-	McHardwareInterfaces::BaseResult	sendCommandDriverOutputControl		(	uint16_t			a,
-																				uint8_t				b		);
+	McHardwareInterfaces::BaseResult	sendCommandDriverOutputControl		(	uint16_t			yPixels	);
 	McHardwareInterfaces::BaseResult	sendCommandSetDummyLinePeriod		(	uint8_t				dummyLinePeriod	);
 	McHardwareInterfaces::BaseResult	sendCommandSetGateLineWidth			(	uint8_t				gateLineWidth	);
 
@@ -70,6 +69,10 @@ private:
 	McHardwareInterfaces::BaseResult	sendCommandDisplayUpdateControl2	(	uint8_t				arg	);
 
 	McHardwareInterfaces::BaseResult	sendCommandMasterActivation			(	void	);
+
+	McHardwareInterfaces::BaseResult	sendCommandBoosterSoftstart			(	uint8_t				a,
+																				uint8_t				b,
+																				uint8_t				c	);
 
 private:
 	bool								flagInitLcd			= false;		// Инициализирован ли LCD?
