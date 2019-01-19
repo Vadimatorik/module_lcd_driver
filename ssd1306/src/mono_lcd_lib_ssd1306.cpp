@@ -32,14 +32,14 @@ BASE_RESULT Ssd1306::reset ( void ) {
     USER_OS_TAKE_MUTEX( this->mutex, portMAX_DELAY );   // Ждем, пока освободится SPI.
 
     cfg->cs->reset();  	// Выбираем наш дисплей.
-	BASE_RESULT r;
-	r = this->cfg->s->tx( ssd1306_init_command, sizeof( ssd1306_init_command ), 100 );
-	cfg->cs->reset();
-	USER_OS_GIVE_MUTEX( this->mutex );	// Разрешаем использование SPI другим потокам.
+    BASE_RESULT r;
+    r = this->cfg->s->tx( ssd1306_init_command, sizeof( ssd1306_init_command ), 100 );
+    cfg->cs->reset();
+    USER_OS_GIVE_MUTEX( this->mutex );	// Разрешаем использование SPI другим потокам.
 
-	checkResult( r );
-	this->flag = true;
-	return this->update();					// Обновляем буффер.
+    checkResult( r );
+    this->flag = true;
+    return this->update();					// Обновляем буффер.
 }
 
 /*
@@ -60,31 +60,31 @@ BASE_RESULT Ssd1306::set_pos_to_lcd ( const uint8_t& x, const uint8_t& y ) {
     buffer_command[2] = 0xb0+y;
     buffer_command[1] = ( ( x & 0xf0 ) >> 4 ) | 0x10;
     buffer_command[0] = ( x & 0x0f ) | 0x01;
-	BASE_RESULT r;
-	r = this->cfg->s->tx( buffer_command, 3, 100 );
-	return r;
+    BASE_RESULT r;
+    r = this->cfg->s->tx( buffer_command, 3, 100 );
+    return r;
 }
 
 // Выдаем данные из буфера.
 BASE_RESULT Ssd1306::update ( void ) {
-	BASE_RESULT r;
-	if ( this->flag == 0 ) return BASE_RESULT::ERROR_INIT;		// Если экран еще не инициализирован - выходим.
+    BASE_RESULT r;
+    if ( this->flag == 0 ) return BASE_RESULT::ERROR_INIT;		// Если экран еще не инициализирован - выходим.
     USER_OS_TAKE_MUTEX( this->mutex, portMAX_DELAY );   // Ждем, пока освободится SPI.
 
     cfg->cs->reset();               // Выбираем дисплей.
 
-	r = this->set_pos_to_lcd( 0, 0 );
+    r = this->set_pos_to_lcd( 0, 0 );
 
-	if ( r == BASE_RESULT::OK )	{
-		cfg->dc->set(); // Далее идут данные.
+    if ( r == BASE_RESULT::OK )	{
+        cfg->dc->set(); // Далее идут данные.
 
-		r = this->cfg->s->tx( this->buf, 1024, 100 );
+        r = this->cfg->s->tx( this->buf, 1024, 100 );
 
-		cfg->cs->set();// Отсоединяем SPI от дисплея.
-	}
+        cfg->cs->set();// Отсоединяем SPI от дисплея.
+    }
     USER_OS_GIVE_MUTEX( this->mutex );	// Разрешаем использование SPI другим потокам.
 
-	return r;
+    return r;
 }
 
 // Инициализируем LCD.
