@@ -83,6 +83,8 @@ public:
     ST7565 (const ST7565Cfg *const cfg,
             uint8_t *const userBuf);
     
+    ~ST7565(){}
+    
     McHardwareInterfaces::BaseResult reset (void);
     
     McHardwareInterfaces::BaseResult setContrast (uint8_t val);
