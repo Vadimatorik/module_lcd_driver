@@ -35,25 +35,25 @@ public:
 	 * Метод должен сбрасывать LCD в начальное состояние (но не включать!).
 	 */
 
-	virtual McHardwareInterfaces::BaseResult	reset			(	void	) = 0;
+	virtual mc_interfaces::res	reset			(	void	) = 0;
 
    /*
 	* Включить/выключить дисплей.
 	*/
-	virtual McHardwareInterfaces::BaseResult	on				(	void	) = 0;
-	virtual McHardwareInterfaces::BaseResult	off				(	void	) = 0;
+	virtual mc_interfaces::res	on				(	void	) = 0;
+	virtual mc_interfaces::res	off				(	void	) = 0;
 
 
 	/*
 	 * Вывод данных из буфера в сам LCD.
 	 */
-	virtual McHardwareInterfaces::BaseResult 	update			(	void	) = 0;
+	virtual mc_interfaces::res 	update			(	void	) = 0;
 
 
 	/*
 	 * Очистка непосредственно экрана.
 	 */
-	virtual McHardwareInterfaces::BaseResult 	lcdClear		(	void	) = 0;
+	virtual mc_interfaces::res 	lcdClear		(	void	) = 0;
 
 	/*
 	 * Очистка буфера экрана.

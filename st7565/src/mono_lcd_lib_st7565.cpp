@@ -15,27 +15,27 @@ ST7565::ST7565 (const ST7565Cfg *const cfg, uint8_t *const buf) :
     this->m = USER_OS_STATIC_MUTEX_CREATE(&this->mb);
 }
 
-McHardwareInterfaces::BaseResult ST7565::comOut (uint8_t command) {
+mc_interfaces::res ST7565::comOut (uint8_t command) {
     cfg->a0->reset();
     cfg->cs->reset();
-    McHardwareInterfaces::BaseResult r = this->cfg->s->tx(&command, 1, 100);
+    mc_interfaces::res r = this->cfg->s->tx(&command, 1, 100);
     cfg->cs->set();
     return r;
 }
 
-McHardwareInterfaces::BaseResult ST7565::dataOut (uint8_t data) {
+mc_interfaces::res ST7565::dataOut (uint8_t data) {
     cfg->a0->set();
     cfg->cs->reset();
-    McHardwareInterfaces::BaseResult r = this->cfg->s->tx(&data, 1, 100);
+    mc_interfaces::res r = this->cfg->s->tx(&data, 1, 100);
     cfg->cs->set();
     return r;
 }
 
 
-McHardwareInterfaces::BaseResult ST7565::setContrast (uint8_t val) {
+mc_interfaces::res ST7565::setContrast (uint8_t val) {
     USER_OS_TAKE_MUTEX(this->m, portMAX_DELAY);
     
-    McHardwareInterfaces::BaseResult r;
+    mc_interfaces::res r;
     
     do {
         r = this->comOut(CMD_SET_VOLUME_FIRST);
@@ -48,10 +48,10 @@ McHardwareInterfaces::BaseResult ST7565::setContrast (uint8_t val) {
     return r;
 }
 
-McHardwareInterfaces::BaseResult ST7565::reset (void) {
+mc_interfaces::res ST7565::reset (void) {
     USER_OS_TAKE_MUTEX(this->m, portMAX_DELAY);
     
-    McHardwareInterfaces::BaseResult r;
+    mc_interfaces::res r;
     
     do {
         cfg->cs->set();
@@ -103,10 +103,10 @@ McHardwareInterfaces::BaseResult ST7565::reset (void) {
     return r;
 }
 
-McHardwareInterfaces::BaseResult ST7565::on (void) {
+mc_interfaces::res ST7565::on (void) {
     USER_OS_TAKE_MUTEX(this->m, portMAX_DELAY);
     
-    McHardwareInterfaces::BaseResult r;
+    mc_interfaces::res r;
     r = this->comOut(CMD_DISPLAY_ON);
     
     USER_OS_GIVE_MUTEX(this->m);
@@ -114,10 +114,10 @@ McHardwareInterfaces::BaseResult ST7565::on (void) {
     return r;
 }
 
-McHardwareInterfaces::BaseResult ST7565::off (void) {
+mc_interfaces::res ST7565::off (void) {
     USER_OS_TAKE_MUTEX(this->m, portMAX_DELAY);
     
-    McHardwareInterfaces::BaseResult r;
+    mc_interfaces::res r;
     r = this->comOut(CMD_DISPLAY_OFF);
     
     USER_OS_GIVE_MUTEX(this->m);
@@ -125,10 +125,10 @@ McHardwareInterfaces::BaseResult ST7565::off (void) {
     return r;
 }
 
-McHardwareInterfaces::BaseResult ST7565::update (void) {
+mc_interfaces::res ST7565::update (void) {
     USER_OS_TAKE_MUTEX(this->m, portMAX_DELAY);
     
-    McHardwareInterfaces::BaseResult r;
+    mc_interfaces::res r;
     
     do {
         for (int page_l = 0; page_l < 8; page_l++) {
@@ -177,10 +177,10 @@ McHardwareInterfaces::BaseResult ST7565::update (void) {
     return r;
 }
 
-McHardwareInterfaces::BaseResult ST7565::lcdClear (void) {
+mc_interfaces::res ST7565::lcdClear (void) {
     USER_OS_TAKE_MUTEX(this->m, portMAX_DELAY);
     
-    McHardwareInterfaces::BaseResult r;
+    mc_interfaces::res r;
     
     do {
         uint8_t buf = 0;

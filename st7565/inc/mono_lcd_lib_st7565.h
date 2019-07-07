@@ -50,7 +50,7 @@ class ST7565 {
 namespace MonoLcd {
 
 #define        checkResultAndBreak(baseResultVariable)                                        \
-                if ( baseResultVariable != McHardwareInterfaces::BaseResult::ok ) {        \
+                if ( baseResultVariable != mc_interfaces::res::ok ) {        \
                     break;                                                                \
                 }
 
@@ -66,10 +66,10 @@ enum class ST7565_MODE {
 //
 // Структура конфигурации ssd1306 в 8-ми битнос SPI режиме.
 struct ST7565Cfg {
-    McHardwareInterfaces::Pin *const a0;
-    McHardwareInterfaces::Pin *const res;
-    McHardwareInterfaces::Pin *const cs;
-    McHardwareInterfaces::SpiMaster8Bit *const s;
+    mc_interfaces::Pin *const a0;
+    mc_interfaces::Pin *const res;
+    mc_interfaces::Pin *const cs;
+    mc_interfaces::SpiMaster8Bit *const s;
     const ST7565_MODE mode;
 };
 
@@ -85,24 +85,24 @@ public:
     
     ~ST7565(){}
     
-    McHardwareInterfaces::BaseResult reset (void);
+    mc_interfaces::res reset (void);
     
-    McHardwareInterfaces::BaseResult setContrast (uint8_t val);
+    mc_interfaces::res setContrast (uint8_t val);
     
-    McHardwareInterfaces::BaseResult on (void);
+    mc_interfaces::res on (void);
     
-    McHardwareInterfaces::BaseResult off (void);
+    mc_interfaces::res off (void);
     
-    McHardwareInterfaces::BaseResult update (void);
+    mc_interfaces::res update (void);
     
-    McHardwareInterfaces::BaseResult lcdClear (void);
+    mc_interfaces::res lcdClear (void);
     
     void bufClear (void);
 
 private:
-    McHardwareInterfaces::BaseResult comOut (uint8_t command);
+    mc_interfaces::res comOut (uint8_t command);
     
-    McHardwareInterfaces::BaseResult dataOut (uint8_t data);
+    mc_interfaces::res dataOut (uint8_t data);
 
 private:
     bool flagInitLcd = false;        // Инициализирован ли LCD?
