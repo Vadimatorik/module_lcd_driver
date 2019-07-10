@@ -5,14 +5,14 @@
 #ifdef MODULE_MONO_LCD_GDEH0154D27_ENABLED
 
 #include "lcd_interface.h"
-#include "mc_hardware_interfaces_pin.h"
-#include "mc_hardware_interfaces_spi_master_8bit.h"
+#include "mc_pin.h"
+#include "mc_spi_master_8bit.h"
 #include "user_os.h"
 
 namespace MonoLcd {
 
 #define		checkResultAndBreak(baseResultVariable)										\
-                if ( baseResultVariable != McHardwareInterfaces::BaseResult::ok ) {		\
+                if ( baseResultVariable != mc_interfaces::res::ok ) {		\
                     break;																\
                 }
 
@@ -21,11 +21,11 @@ namespace MonoLcd {
 //
 // Структура конфигурации ssd1306 в 8-ми битнос SPI режиме.
 struct GDEH0154D27Cfg {
-    McHardwareInterfaces::Pin*					const dc;
-    McHardwareInterfaces::Pin*					const res;
-    McHardwareInterfaces::Pin*					const cs;
-    McHardwareInterfaces::Pin*					const busy;
-    McHardwareInterfaces::SpiMaster8Bit*		const s;
+    mc_interfaces::Pin*					const dc;
+    mc_interfaces::Pin*					const res;
+    mc_interfaces::Pin*					const cs;
+    mc_interfaces::Pin*					const busy;
+    mc_interfaces::SpiMaster8Bit*		const s;
 };
 
 /*
@@ -38,25 +38,25 @@ public:
     GDEH0154D27 (	const GDEH0154D27Cfg*	const cfg,
                     uint8_t*				const userBuf );
 
-    McHardwareInterfaces::BaseResult	reset			(	void	);
-    McHardwareInterfaces::BaseResult	on				(	void 	);
-    McHardwareInterfaces::BaseResult	off				(	void	);
-    McHardwareInterfaces::BaseResult	update			(	void	);
-    McHardwareInterfaces::BaseResult	lcdClear			(	void	);
+    mc_interfaces::res	reset			(	void	);
+    mc_interfaces::res	on				(	void 	);
+    mc_interfaces::res	off				(	void	);
+    mc_interfaces::res	update			(	void	);
+    mc_interfaces::res	lcdClear			(	void	);
     void								bufClear		( void );
 
 private:
-    McHardwareInterfaces::BaseResult 	write ( const uint8_t* const data, uint8_t dataSize );
-    McHardwareInterfaces::BaseResult 	writeCmd( uint8_t command );
-    McHardwareInterfaces::BaseResult 	writeCmdP1( uint8_t command, uint8_t para );
+    mc_interfaces::res 	write ( const uint8_t* const data, uint8_t dataSize );
+    mc_interfaces::res 	writeCmd( uint8_t command );
+    mc_interfaces::res 	writeCmdP1( uint8_t command, uint8_t para );
     void ReadBusy ( void );
-    McHardwareInterfaces::BaseResult 	sendBuffer ( void );
+    mc_interfaces::res 	sendBuffer ( void );
 
-    McHardwareInterfaces::BaseResult setRamArea( uint8_t Xstart,uint8_t Xend,uint8_t Ystart,uint8_t Ystart1,uint8_t Yend,uint8_t Yend1);
-    McHardwareInterfaces::BaseResult setRamPointer(uint8_t addrX,uint8_t addrY,uint8_t addrY1);
-    McHardwareInterfaces::BaseResult writeDispRam( uint8_t XSize, uint8_t  YSize,		uint8_t  *Dispbuff);
+    mc_interfaces::res setRamArea( uint8_t Xstart,uint8_t Xend,uint8_t Ystart,uint8_t Ystart1,uint8_t Yend,uint8_t Yend1);
+    mc_interfaces::res setRamPointer(uint8_t addrX,uint8_t addrY,uint8_t addrY1);
+    mc_interfaces::res writeDispRam( uint8_t XSize, uint8_t  YSize,		uint8_t  *Dispbuff);
 
-    McHardwareInterfaces::BaseResult 	fullUpdate(void);
+    mc_interfaces::res 	fullUpdate(void);
 private:
     bool								flagInitLcd			= false;		// Инициализирован ли LCD?
     const GDEH0154D27Cfg*				const cfg;

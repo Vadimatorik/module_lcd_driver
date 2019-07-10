@@ -4,8 +4,8 @@
 
 namespace MonoLcd {
 
-MonoLcd.ST7565		--o			McHardwareInterfaces.Pin
-MonoLcd.ST7565		--o			McHardwareInterfaces.SpiMaster8Bit
+MonoLcd.ST7565		--o			mc_interfaces.Pin
+MonoLcd.ST7565		--o			mc_interfaces.SpiMaster8Bit
 MonoLcd.ST7565		..|>		MonoLcd.Base
 
 class ST7565 {
@@ -18,16 +18,16 @@ class ST7565 {
 	__Constructor__
 	{method}+	ST7565	( const ST7565Cfg*	const cfg,\n\t\t  uint8_t*			const userBuf )
 	__Public methods__
-	{method}+	McHardwareInterfaces::BaseResult	reset			( void )
-	{method}+	McHardwareInterfaces::BaseResult	setContrast	( uint8_t		val )
-	{method}+	McHardwareInterfaces::BaseResult	on			( void )
-	{method}+	McHardwareInterfaces::BaseResult	off			( void )
-	{method}+	McHardwareInterfaces::BaseResult	update		( void )
-	{method}+	McHardwareInterfaces::BaseResult	lcdClear		( void )
+	{method}+	mc_interfaces::res	reset			( void )
+	{method}+	mc_interfaces::res	setContrast	( uint8_t		val )
+	{method}+	mc_interfaces::res	on			( void )
+	{method}+	mc_interfaces::res	off			( void )
+	{method}+	mc_interfaces::res	update		( void )
+	{method}+	mc_interfaces::res	lcdClear		( void )
 	{method}+	void							bufClear		( void )
 	__Private methods__
-	{method}-	McHardwareInterfaces::BaseResult	comOut		( uint8_t		command );
-	{method}-	McHardwareInterfaces::BaseResult	dataOut		( uint8_t		data );
+	{method}-	mc_interfaces::res	comOut		( uint8_t		command );
+	{method}-	mc_interfaces::res	dataOut		( uint8_t		data );
 }
 
 }
@@ -43,8 +43,8 @@ class ST7565 {
 #ifdef MODULE_MONO_LCD_ST7565_ENABLED
 
 #include "lcd_interface.h"
-#include "mc_hardware_interfaces_pin.h"
-#include "mc_hardware_interfaces_spi_master_8bit.h"
+#include "mc_pin.h"
+#include "mc_spi_master_8bit.h"
 #include "user_os.h"
 
 namespace MonoLcd {

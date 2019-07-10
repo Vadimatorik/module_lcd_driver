@@ -16,15 +16,15 @@ GDEH0154D27::GDEH0154D27 ( const GDEH0154D27Cfg* const cfg, uint8_t* const buf )
 /*!
  *	Первый байт отправляется как команда, а последующие как данные.
  */
-McHardwareInterfaces::BaseResult GDEH0154D27::write ( const uint8_t* const data, uint8_t dataSize ) {
+mc_interfaces::res GDEH0154D27::write ( const uint8_t* const data, uint8_t dataSize ) {
     cfg->cs->reset();
 
     /// Готовимся передавать команду.
     cfg->dc->reset();
 
     /// Передаем команду (1 байт).
-    McHardwareInterfaces::BaseResult r = this->cfg->s->tx( data, 1, 10 );
-    if ( r != McHardwareInterfaces::BaseResult::ok ) {
+    mc_interfaces::res r = this->cfg->s->tx( data, 1, 10 );
+    if ( r != mc_interfaces::res::ok ) {
         return r;
     }
 
@@ -39,12 +39,12 @@ McHardwareInterfaces::BaseResult GDEH0154D27::write ( const uint8_t* const data,
     return r;
 }
 
-McHardwareInterfaces::BaseResult GDEH0154D27::writeCmd( uint8_t command ) {
+mc_interfaces::res GDEH0154D27::writeCmd( uint8_t command ) {
     cfg->cs->reset();
     cfg->dc->reset();
 
-    McHardwareInterfaces::BaseResult r = this->cfg->s->tx( &command, 1, 10 );
-        if ( r != McHardwareInterfaces::BaseResult::ok ) {
+    mc_interfaces::res r = this->cfg->s->tx( &command, 1, 10 );
+        if ( r != mc_interfaces::res::ok ) {
             return r;
         }
 
@@ -58,15 +58,15 @@ void GDEH0154D27::ReadBusy ( void ) {
     }
 }
 
-McHardwareInterfaces::BaseResult GDEH0154D27::writeCmdP1( uint8_t command, uint8_t arg ) {
+mc_interfaces::res GDEH0154D27::writeCmdP1( uint8_t command, uint8_t arg ) {
     //while(isEPD_W21_BUSY == 1);	// wait
     this->ReadBusy();
 
     cfg->cs->reset();
     cfg->dc->reset();
 
-    McHardwareInterfaces::BaseResult r = this->cfg->s->tx( &command, 1, 10 );
-    if ( r != McHardwareInterfaces::BaseResult::ok ) {
+    mc_interfaces::res r = this->cfg->s->tx( &command, 1, 10 );
+    if ( r != mc_interfaces::res::ok ) {
         return r;
     }
 
@@ -78,8 +78,8 @@ McHardwareInterfaces::BaseResult GDEH0154D27::writeCmdP1( uint8_t command, uint8
     return r;
 }
 
-McHardwareInterfaces::BaseResult GDEH0154D27::setRamArea( uint8_t Xstart,uint8_t Xend,uint8_t Ystart,uint8_t Ystart1,uint8_t Yend,uint8_t Yend1){
-    McHardwareInterfaces::BaseResult r = McHardwareInterfaces::BaseResult::ok;
+mc_interfaces::res GDEH0154D27::setRamArea( uint8_t Xstart,uint8_t Xend,uint8_t Ystart,uint8_t Ystart1,uint8_t Yend,uint8_t Yend1){
+    mc_interfaces::res r = mc_interfaces::res::ok;
 
     uint8_t RamAreaX[3];	// X start and end
     uint8_t RamAreaY[5]; 	// Y start and end
@@ -101,8 +101,8 @@ McHardwareInterfaces::BaseResult GDEH0154D27::setRamArea( uint8_t Xstart,uint8_t
     return r;
 }
 
-McHardwareInterfaces::BaseResult GDEH0154D27::setRamPointer(uint8_t addrX,uint8_t addrY,uint8_t addrY1){
-    McHardwareInterfaces::BaseResult r = McHardwareInterfaces::BaseResult::ok;
+mc_interfaces::res GDEH0154D27::setRamPointer(uint8_t addrX,uint8_t addrY,uint8_t addrY1){
+    mc_interfaces::res r = mc_interfaces::res::ok;
 
     uint8_t RamPointerX[2];	// default (0,0)
     uint8_t RamPointerY[3];
@@ -122,10 +122,10 @@ McHardwareInterfaces::BaseResult GDEH0154D27::setRamPointer(uint8_t addrX,uint8_
 }
 
 
-McHardwareInterfaces::BaseResult GDEH0154D27::reset ( void ) {
+mc_interfaces::res GDEH0154D27::reset ( void ) {
     USER_OS_TAKE_MUTEX( this->m, portMAX_DELAY );
 
-    McHardwareInterfaces::BaseResult r = McHardwareInterfaces::BaseResult::ok;
+    mc_interfaces::res r = mc_interfaces::res::ok;
 
     do {
         cfg->cs->set();
@@ -159,8 +159,8 @@ McHardwareInterfaces::BaseResult GDEH0154D27::reset ( void ) {
 }
 
 
-McHardwareInterfaces::BaseResult 	GDEH0154D27::fullUpdate(void){
-    McHardwareInterfaces::BaseResult r;
+mc_interfaces::res 	GDEH0154D27::fullUpdate(void){
+    mc_interfaces::res r;
 
     do {
         r = this->writeCmdP1(0x22,0xc4);
@@ -173,8 +173,8 @@ McHardwareInterfaces::BaseResult 	GDEH0154D27::fullUpdate(void){
     return r;
 }
 
-McHardwareInterfaces::BaseResult 	GDEH0154D27::sendBuffer ( void ) {
-    McHardwareInterfaces::BaseResult r;
+mc_interfaces::res 	GDEH0154D27::sendBuffer ( void ) {
+    mc_interfaces::res r;
 
     do {
         r = this->setRamPointer( 0x00,(yDot-1)%256,(yDot-1)/256 );
@@ -189,7 +189,7 @@ McHardwareInterfaces::BaseResult 	GDEH0154D27::sendBuffer ( void ) {
 
 
 
-McHardwareInterfaces::BaseResult 	GDEH0154D27::writeDispRam( uint8_t XSize, uint8_t  YSize,		uint8_t  *Dispbuff) {
+mc_interfaces::res 	GDEH0154D27::writeDispRam( uint8_t XSize, uint8_t  YSize,		uint8_t  *Dispbuff) {
 
         if(XSize%8 != 0)
         {
@@ -207,15 +207,15 @@ McHardwareInterfaces::BaseResult 	GDEH0154D27::writeDispRam( uint8_t XSize, uint
 
         uint8_t bufCmd = 0x24;
 
-        McHardwareInterfaces::BaseResult r = this->cfg->s->tx( &bufCmd, 1, 10 );
-            if ( r != McHardwareInterfaces::BaseResult::ok ) {
+        mc_interfaces::res r = this->cfg->s->tx( &bufCmd, 1, 10 );
+            if ( r != mc_interfaces::res::ok ) {
                 return r;
             }
 
             cfg->dc->set();	//data write
 
          r = this->cfg->s->tx( Dispbuff, YSize * XSize, 100 );
-                if ( r != McHardwareInterfaces::BaseResult::ok ) {
+                if ( r != mc_interfaces::res::ok ) {
                     return r;
                 }
 
@@ -228,10 +228,10 @@ McHardwareInterfaces::BaseResult 	GDEH0154D27::writeDispRam( uint8_t XSize, uint
 
 
 
-McHardwareInterfaces::BaseResult GDEH0154D27::on ( void ) {
+mc_interfaces::res GDEH0154D27::on ( void ) {
     USER_OS_TAKE_MUTEX( this->m, portMAX_DELAY );
 
-    McHardwareInterfaces::BaseResult r;
+    mc_interfaces::res r;
 
     do {
         r = writeCmdP1( 0x22,0xc0 );
@@ -244,11 +244,11 @@ McHardwareInterfaces::BaseResult GDEH0154D27::on ( void ) {
     return r;
 }
 
-McHardwareInterfaces::BaseResult GDEH0154D27::off ( void ) {
+mc_interfaces::res GDEH0154D27::off ( void ) {
     USER_OS_TAKE_MUTEX( this->m, portMAX_DELAY );
 
-    McHardwareInterfaces::BaseResult r;
-    r = McHardwareInterfaces::BaseResult::errNotData;
+    mc_interfaces::res r;
+    r = mc_interfaces::res::errNotData;
     //r = this->comOut(CMD_DISPLAY_OFF);
 
     USER_OS_GIVE_MUTEX( this->m );
@@ -256,8 +256,8 @@ McHardwareInterfaces::BaseResult GDEH0154D27::off ( void ) {
     return r;
 }
 
-McHardwareInterfaces::BaseResult GDEH0154D27::update ( void ) {
-    McHardwareInterfaces::BaseResult r;
+mc_interfaces::res GDEH0154D27::update ( void ) {
+    mc_interfaces::res r;
 
     USER_OS_TAKE_MUTEX( this->m, portMAX_DELAY );
 
@@ -268,10 +268,10 @@ McHardwareInterfaces::BaseResult GDEH0154D27::update ( void ) {
     return r;
 }
 
-McHardwareInterfaces::BaseResult GDEH0154D27::lcdClear ( void ) {
+mc_interfaces::res GDEH0154D27::lcdClear ( void ) {
     USER_OS_TAKE_MUTEX( this->m, portMAX_DELAY );
 
-    McHardwareInterfaces::BaseResult r;
+    mc_interfaces::res r;
 
     memset( this->userBuf, 0, 5000 );
     r = this->sendBuffer();

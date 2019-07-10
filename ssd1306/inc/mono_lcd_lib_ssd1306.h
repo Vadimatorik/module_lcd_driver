@@ -3,8 +3,8 @@
 #ifdef MODULE_MONO_LCD_SSD1306_ENABLED
 
 #include "lcd_interface.h"
-#include "mc_hardware_interfaces_pin.h"
-#include "mc_hardware_interfaces_spi_master_8bit.h"
+#include "mc_pin.h"
+#include "mc_spi_master_8bit.h"
 #include "user_os.h"
 
 //

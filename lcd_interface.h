@@ -5,11 +5,11 @@
 namespace MonoLcd {
 
 interface Base {
-	{abstract}{method}+	McHardwareInterfaces::BaseResult	reset		( void )
-	{abstract}{method}+	McHardwareInterfaces::BaseResult	on		( void )
-	{abstract}{method}+	McHardwareInterfaces::BaseResult	off		( void )
-	{abstract}{method}+	McHardwareInterfaces::BaseResult 	update	( void )
-	{abstract}{method}+	McHardwareInterfaces::BaseResult 	lcdClear	( void )
+	{abstract}{method}+	mc_interfaces::res	reset		( void )
+	{abstract}{method}+	mc_interfaces::res	on		( void )
+	{abstract}{method}+	mc_interfaces::res	off		( void )
+	{abstract}{method}+	mc_interfaces::res 	update	( void )
+	{abstract}{method}+	mc_interfaces::res 	lcdClear	( void )
 	{abstract}{method}+	void							bufClear	( void )
 }
 
@@ -20,7 +20,7 @@ interface Base {
 */
 #pragma once
 
-#include "mc_hardware_interfaces_base.h"
+#include "mc_base.h"
 
 namespace MonoLcd {
 
