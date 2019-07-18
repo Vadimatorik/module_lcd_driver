@@ -22,15 +22,15 @@ interface Base {
 
 #include "mc_base.h"
 
-namespace MonoLcd {
+namespace mono_lcd {
 
 /*
  * Этот класс является чисто виртуальным базовым классом
  * для всех монохромных LCD с расширением 128x64.
  */
-class Base {
+class base {
 public:
-	constexpr Base() {}
+	constexpr base() {}
 	/*
 	 * Метод должен сбрасывать LCD в начальное состояние (но не включать!).
 	 */
@@ -60,7 +60,7 @@ public:
 	 */
 	virtual void								buf_clear (void) = 0;
 
-	virtual ~Base() {}
+	virtual ~base() {}
 };
 
 }

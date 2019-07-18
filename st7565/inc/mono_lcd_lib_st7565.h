@@ -1,41 +1,3 @@
-/*
-
-@startuml
-
-namespace MonoLcd {
-
-MonoLcd.ST7565		--o			mc_interfaces.Pin
-MonoLcd.ST7565		--o			mc_interfaces.SpiMaster8Bit
-MonoLcd.ST7565		..|>		MonoLcd.Base
-
-class ST7565 {
-	{field}-	bool								flagInitLcd
-	{field}-	const ST7565Cfg*					const cfg
-	{field}-	uint8_t*							const userBuf
-	{field}-	uint8_t							lcdImage[ 128 ]
-	{field}-	USER_OS_STATIC_MUTEX_BUFFER			mb
-	{field}-	USER_OS_STATIC_MUTEX				m
-	__Constructor__
-	{method}+	ST7565	( const ST7565Cfg*	const cfg,\n\t\t  uint8_t*			const userBuf )
-	__Public methods__
-	{method}+	mc_interfaces::res	reset			( void )
-	{method}+	mc_interfaces::res	setContrast	( uint8_t		val )
-	{method}+	mc_interfaces::res	on			( void )
-	{method}+	mc_interfaces::res	off			( void )
-	{method}+	mc_interfaces::res	update		( void )
-	{method}+	mc_interfaces::res	lcdClear		( void )
-	{method}+	void							bufClear		( void )
-	__Private methods__
-	{method}-	mc_interfaces::res	comOut		( uint8_t		command );
-	{method}-	mc_interfaces::res	dataOut		( uint8_t		data );
-}
-
-}
-
-@enduml
-
-*/
-
 #pragma once
 
 #include "project_config.h"
@@ -47,12 +9,7 @@ class ST7565 {
 #include "mc_spi_master_8bit.h"
 #include "user_os.h"
 
-namespace MonoLcd {
-
-#define        checkResultAndBreak(baseResultVariable)                                        \
-                if ( baseResultVariable != mc_interfaces::res::err_ok ) {        \
-                    break;                                                                \
-                }
+namespace mono_lcd {
 
 enum class ST7565_MODE {
     STANDARD = 0,
@@ -80,31 +37,24 @@ struct ST7565Cfg {
  * Любой из методов класса долен быть вызван только
  * внутри потока пользовательской операционной системы.
  */
-class ST7565 : public MonoLcd::Base {
+class st7565 : public mono_lcd::base {
 public:
     
-    ST7565 (const ST7565Cfg *const cfg,
+    st7565 (const ST7565Cfg *const cfg,
             uint8_t *const userBuf);
     
-    ~ST7565(){}
+    ~st7565() = default;
     
     mc_interfaces::res reset (void);
-    
     mc_interfaces::res set_contrast (uint8_t val);
-    
     mc_interfaces::res on (void);
-    
     mc_interfaces::res off (void);
-    
     mc_interfaces::res update (void);
-    
     mc_interfaces::res lcd_clear (void);
-    
     void buf_clear (void);
 
 private:
     mc_interfaces::res comOut (uint8_t command);
-    
     mc_interfaces::res dataOut (uint8_t data);
 
 private:
