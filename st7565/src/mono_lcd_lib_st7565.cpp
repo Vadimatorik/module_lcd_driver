@@ -15,7 +15,7 @@ namespace mono_lcd {
                     break;                                                                \
                 }
 
-st7565::st7565 (const ST7565Cfg *const cfg, uint8_t *const buf) :
+st7565::st7565 (const st7565_cfg *const cfg, uint8_t *const buf) :
     cfg(cfg), userBuf(buf) {
     this->m = USER_OS_STATIC_MUTEX_CREATE(&this->mb);
 }
@@ -149,20 +149,20 @@ mc_interfaces::res st7565::update (void) {
             
             for (uint32_t string_l = 0; string_l < 8; string_l++) {
                 uint32_t us_p_string;
-                if ((this->cfg->mode == ST7565_MODE::IVERT_Y) || (this->cfg->mode == ST7565_MODE::IVERT_X_AMD_Y)) {
+                if ((this->cfg->mode == st7565_mode::ivert_y) || (this->cfg->mode == st7565_mode::ivert_x_amd_y)) {
                     us_p_string = (7 - page_l) * 128 + (7 - string_l) * 16;
                 } else {
                     us_p_string = page_l * 128 + string_l * 16;
                 }
                 for (uint32_t column_l = 0; column_l < 128; column_l++) {
                     switch ((uint32_t)this->cfg->mode) {
-                        case (uint32_t)ST7565_MODE::STANDARD:
-                        case (uint32_t)ST7565_MODE::IVERT_Y:
+                        case (uint32_t)st7565_mode::standard:
+                        case (uint32_t)st7565_mode::ivert_y:
                             this->lcdImage[column_l] |=
                                 ((this->userBuf[us_p_string + column_l / 8] >> (column_l % 8)) & 1) << string_l;
                             break;
-                        case (uint32_t)ST7565_MODE::IVERT_X:
-                        case (uint32_t)ST7565_MODE::IVERT_X_AMD_Y:
+                        case (uint32_t)st7565_mode::ivert_x:
+                        case (uint32_t)st7565_mode::ivert_x_amd_y:
                             this->lcdImage[127 - column_l] |=
                                 ((this->userBuf[us_p_string + column_l / 8] >> (column_l % 8)) & 1) << string_l;
                             break;

@@ -11,23 +11,23 @@
 
 namespace mono_lcd {
 
-enum class ST7565_MODE {
-    STANDARD = 0,
-    IVERT_X = 1,
-    IVERT_Y = 2,
-    IVERT_X_AMD_Y = 3
+enum class st7565_mode {
+    standard = 0,
+    ivert_x = 1,
+    ivert_y = 2,
+    ivert_x_amd_y = 3
 };
 
 //
 // Парметры SPI MOTOROLA, CPHA = 1, CPOL = 1.
 //
 // Структура конфигурации ssd1306 в 8-ми битнос SPI режиме.
-struct ST7565Cfg {
+struct st7565_cfg {
     mc_interfaces::Pin *const a0;
     mc_interfaces::Pin *const res;
     mc_interfaces::Pin *const cs;
     mc_interfaces::SpiMaster8Bit *const s;
-    const ST7565_MODE mode;
+    const st7565_mode mode;
 };
 
 #define ST7565_WIDTH 128
@@ -40,7 +40,7 @@ struct ST7565Cfg {
 class st7565 : public mono_lcd::base {
 public:
     
-    st7565 (const ST7565Cfg *const cfg,
+    st7565 (const st7565_cfg *const cfg,
             uint8_t *const userBuf);
     
     ~st7565() = default;
@@ -59,7 +59,7 @@ private:
 
 private:
     bool flagInitLcd = false;        // Инициализирован ли LCD?
-    const ST7565Cfg *const cfg;
+    const st7565_cfg *const cfg;
     uint8_t *const userBuf;        // Сам буффер менять можно, но указетль на него - нет.
     // Системный буфер для преобразования.
     // Дисплей едресуется вертикальными столбцами по 8 бит в высоту и 1 ширину. И так 8 строк.
