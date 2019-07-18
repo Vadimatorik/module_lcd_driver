@@ -53,12 +53,12 @@ public:
 	/*
 	 * Очистка непосредственно экрана.
 	 */
-	virtual mc_interfaces::res 	lcdClear		(	void	) = 0;
+	virtual mc_interfaces::res 	lcd_clear (void) = 0;
 
 	/*
 	 * Очистка буфера экрана.
 	 */
-	virtual void								bufClear		(	void	) = 0;
+	virtual void								buf_clear (void) = 0;
 
 	virtual ~Base() {}
 };

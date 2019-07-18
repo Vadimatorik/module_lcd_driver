@@ -32,7 +32,7 @@ mc_interfaces::res ST7565::dataOut (uint8_t data) {
 }
 
 
-mc_interfaces::res ST7565::setContrast (uint8_t val) {
+mc_interfaces::res ST7565::set_contrast (uint8_t val) {
     USER_OS_TAKE_MUTEX(this->m, portMAX_DELAY);
     
     mc_interfaces::res r;
@@ -177,7 +177,7 @@ mc_interfaces::res ST7565::update (void) {
     return r;
 }
 
-mc_interfaces::res ST7565::lcdClear (void) {
+mc_interfaces::res ST7565::lcd_clear (void) {
     USER_OS_TAKE_MUTEX(this->m, portMAX_DELAY);
     
     mc_interfaces::res r;
@@ -204,7 +204,7 @@ mc_interfaces::res ST7565::lcdClear (void) {
     return r;
 }
 
-void ST7565::bufClear (void) {
+void ST7565::buf_clear (void) {
     USER_OS_TAKE_MUTEX(this->m, portMAX_DELAY);
     
     memset(this->userBuf, 0, 1024);

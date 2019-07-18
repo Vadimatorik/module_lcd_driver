@@ -50,7 +50,7 @@ class ST7565 {
 namespace MonoLcd {
 
 #define        checkResultAndBreak(baseResultVariable)                                        \
-                if ( baseResultVariable != mc_interfaces::res::ok ) {        \
+                if ( baseResultVariable != mc_interfaces::res::err_ok ) {        \
                     break;                                                                \
                 }
 
@@ -73,6 +73,9 @@ struct ST7565Cfg {
     const ST7565_MODE mode;
 };
 
+#define ST7565_WIDTH 128
+#define ST7565_HEIGHT 64
+
 /*
  * Любой из методов класса долен быть вызван только
  * внутри потока пользовательской операционной системы.
@@ -87,7 +90,7 @@ public:
     
     mc_interfaces::res reset (void);
     
-    mc_interfaces::res setContrast (uint8_t val);
+    mc_interfaces::res set_contrast (uint8_t val);
     
     mc_interfaces::res on (void);
     
@@ -95,9 +98,9 @@ public:
     
     mc_interfaces::res update (void);
     
-    mc_interfaces::res lcdClear (void);
+    mc_interfaces::res lcd_clear (void);
     
-    void bufClear (void);
+    void buf_clear (void);
 
 private:
     mc_interfaces::res comOut (uint8_t command);
