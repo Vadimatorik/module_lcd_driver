@@ -12,7 +12,7 @@
 namespace MonoLcd {
 
 #define		checkResultAndBreak(baseResultVariable)										\
-                if ( baseResultVariable != mc_interfaces::res::ok ) {		\
+                if ( baseResultVariable != mc_interfaces::res::err_ok ) {		\
                     break;																\
                 }
 

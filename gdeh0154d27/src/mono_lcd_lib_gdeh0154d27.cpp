@@ -24,7 +24,7 @@ mc_interfaces::res GDEH0154D27::write ( const uint8_t* const data, uint8_t dataS
 
     /// Передаем команду (1 байт).
     mc_interfaces::res r = this->cfg->s->tx( data, 1, 10 );
-    if ( r != mc_interfaces::res::ok ) {
+    if ( r != mc_interfaces::res::err_ok ) {
         return r;
     }
 
@@ -44,7 +44,7 @@ mc_interfaces::res GDEH0154D27::writeCmd( uint8_t command ) {
     cfg->dc->reset();
 
     mc_interfaces::res r = this->cfg->s->tx( &command, 1, 10 );
-        if ( r != mc_interfaces::res::ok ) {
+        if ( r != mc_interfaces::res::err_ok ) {
             return r;
         }
 
@@ -66,7 +66,7 @@ mc_interfaces::res GDEH0154D27::writeCmdP1( uint8_t command, uint8_t arg ) {
     cfg->dc->reset();
 
     mc_interfaces::res r = this->cfg->s->tx( &command, 1, 10 );
-    if ( r != mc_interfaces::res::ok ) {
+    if ( r != mc_interfaces::res::err_ok ) {
         return r;
     }
 
@@ -79,7 +79,7 @@ mc_interfaces::res GDEH0154D27::writeCmdP1( uint8_t command, uint8_t arg ) {
 }
 
 mc_interfaces::res GDEH0154D27::setRamArea( uint8_t Xstart,uint8_t Xend,uint8_t Ystart,uint8_t Ystart1,uint8_t Yend,uint8_t Yend1){
-    mc_interfaces::res r = mc_interfaces::res::ok;
+    mc_interfaces::res r = mc_interfaces::res::err_ok;
 
     uint8_t RamAreaX[3];	// X start and end
     uint8_t RamAreaY[5]; 	// Y start and end
@@ -102,7 +102,7 @@ mc_interfaces::res GDEH0154D27::setRamArea( uint8_t Xstart,uint8_t Xend,uint8_t 
 }
 
 mc_interfaces::res GDEH0154D27::setRamPointer(uint8_t addrX,uint8_t addrY,uint8_t addrY1){
-    mc_interfaces::res r = mc_interfaces::res::ok;
+    mc_interfaces::res r = mc_interfaces::res::err_ok;
 
     uint8_t RamPointerX[2];	// default (0,0)
     uint8_t RamPointerY[3];
@@ -125,7 +125,7 @@ mc_interfaces::res GDEH0154D27::setRamPointer(uint8_t addrX,uint8_t addrY,uint8_
 mc_interfaces::res GDEH0154D27::reset ( void ) {
     USER_OS_TAKE_MUTEX( this->m, portMAX_DELAY );
 
-    mc_interfaces::res r = mc_interfaces::res::ok;
+    mc_interfaces::res r = mc_interfaces::res::err_ok;
 
     do {
         cfg->cs->set();
@@ -208,14 +208,14 @@ mc_interfaces::res 	GDEH0154D27::writeDispRam( uint8_t XSize, uint8_t  YSize,		u
         uint8_t bufCmd = 0x24;
 
         mc_interfaces::res r = this->cfg->s->tx( &bufCmd, 1, 10 );
-            if ( r != mc_interfaces::res::ok ) {
+            if ( r != mc_interfaces::res::err_ok ) {
                 return r;
             }
 
             cfg->dc->set();	//data write
 
          r = this->cfg->s->tx( Dispbuff, YSize * XSize, 100 );
-                if ( r != mc_interfaces::res::ok ) {
+                if ( r != mc_interfaces::res::err_ok ) {
                     return r;
                 }
 
